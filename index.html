@@ -26,7 +26,7 @@ th { background:#222; }
 <label>Ganancia (USD): </label>
 <input type="number" id="ganancia">
 
-<table id="tabla">
+<table>
 <thead>
 <tr>
 <th>Modelo</th>
@@ -37,17 +37,17 @@ th { background:#222; }
 <th>Precio ARS</th>
 </tr>
 </thead>
-<tbody></tbody>
+<tbody id="tabla"></tbody>
 </table>
 </div>
 
 <script>
-const SHEET_ID = "1khFdbRuruEomajgpWX8TQ3G30A2i0-BGKo7Zlw-THA8";
-const URL = `https://opensheet.elk.sh/${SHEET_ID}/0`;
+const CSV_URL = "https://docs.google.com/spreadsheets/d/1khFdbRuruEomajgpWX8TQ3G30A2i0-BGKo7Zlw-THA8/export?format=csv&gid=0";
 
-// guardar valores
 const dolarInput = document.getElementById("dolar");
 const gananciaInput = document.getElementById("ganancia");
+
+// guardar valores
 
 dolarInput.value = localStorage.getItem("dolar") || "";
 gananciaInput.value = localStorage.getItem("ganancia") || "";
@@ -63,33 +63,41 @@ gananciaInput.addEventListener("input", () => {
 });
 
 async function cargar(){
-  const res = await fetch(URL);
-  const data = await res.json();
+  const res = await fetch(CSV_URL);
+  const text = await res.text();
 
-  const tbody = document.querySelector("tbody");
+  const filas = text.split("\n").map(f => f.split(","));
+
+  // fila donde están los headers reales (aprox fila 9)
+  const headerIndex = filas.findIndex(f => f.includes("Modelo"));
+  const headers = filas[headerIndex];
+
+  const data = filas.slice(headerIndex + 1);
+
+  const tbody = document.getElementById("tabla");
   tbody.innerHTML = "";
 
   const dolar = parseFloat(dolarInput.value) || 0;
   const ganancia = parseFloat(gananciaInput.value) || 0;
 
-  data.forEach(item => {
-    // algunas sheets usan mayúsculas/minúsculas distintas
-    const modelo = item.Modelo || item.MODELO || item.modelo;
-    if(!modelo) return;
+  data.forEach(f => {
+    if(!f[0]) return;
 
-    // detectar posibles nombres de columnas (por si cambian)
-    const precioRaw = item["Precio lista"] || item["Precio"] || item["Precio USD"] || "0";
-    let precioUSD = parseFloat(precioRaw.toString().replace("USD", "").replace(/,/g, "").trim()) || 0;
-    let precioARS = (precioUSD + ganancia) * dolar;
+    const modelo = f[0];
+    const gb = f[1];
+    const color = f[2];
+    const bateria = parseInt(f[3]) || 0;
+    const precioUSD = parseFloat((f[5] || "").replace("USD", "")) || 0;
 
-    let bateria = parseInt(item["Batería"] || item["Bateria"] || item["battery"] || 0);
-    let clase = bateria > 85 ? "green" : bateria >= 80 ? "yellow" : "red";
+    const precioARS = (precioUSD + ganancia) * dolar;
+
+    const clase = bateria > 85 ? "green" : bateria >= 80 ? "yellow" : "red";
 
     tbody.innerHTML += `
     <tr>
       <td>${modelo}</td>
-      <td>${item.GB || item.gb || ""}</td>
-      <td>${item.Color || item.color || ""}</td>
+      <td>${gb}</td>
+      <td>${color}</td>
       <td class="${clase}">${bateria}%</td>
       <td>$${precioUSD}</td>
       <td>$${precioARS.toLocaleString()}</td>
