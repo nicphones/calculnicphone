@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora iPhone</title>
+<style>
+body { font-family: Arial; background:#111; color:#eee; }
+.container { max-width:1200px; margin:auto; padding:20px; }
+input { padding:8px; margin:5px; }
+table { width:100%; border-collapse: collapse; margin-top:20px; }
+th, td { border:1px solid #333; padding:8px; text-align:center; }
+th { background:#222; }
+.green { color:#00ff88; }
+.yellow { color:#ffd000; }
+.red { color:#ff4d4d; }
+</style>
+</head>
+<body>
+<div class="container">
+<h2>Calculadora de Precios</h2>
+
+<label>Dólar: </label>
+<input type="number" id="dolar">
+
+<label>Ganancia (USD): </label>
+<input type="number" id="ganancia">
+
+<table id="tabla">
+<thead>
+<tr>
+<th>Modelo</th>
+<th>GB</th>
+<th>Color</th>
+<th>Batería</th>
+<th>Precio USD</th>
+<th>Precio ARS</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+</div>
+
+<script>
+const SHEET_ID = "1khFdbRuruEomajgpWX8TQ3G30A2i0-BGKo7Zlw-THA8";
+const URL = `https://opensheet.elk.sh/${SHEET_ID}/0`;
+
+// guardar valores
+const dolarInput = document.getElementById("dolar");
+const gananciaInput = document.getElementById("ganancia");
+
+dolarInput.value = localStorage.getItem("dolar") || "";
+gananciaInput.value = localStorage.getItem("ganancia") || "";
+
+dolarInput.addEventListener("input", () => {
+  localStorage.setItem("dolar", dolarInput.value);
+  cargar();
+});
+
+gananciaInput.addEventListener("input", () => {
+  localStorage.setItem("ganancia", gananciaInput.value);
+  cargar();
+});
+
+async function cargar(){
+  const res = await fetch(URL);
+  const data = await res.json();
+
+  const tbody = document.querySelector("tbody");
+  tbody.innerHTML = "";
+
+  const dolar = parseFloat(dolarInput.value) || 0;
+  const ganancia = parseFloat(gananciaInput.value) || 0;
+
+  data.forEach(item => {
+    if(!item.Modelo) return;
+
+    let precioUSD = parseFloat(item["Precio lista"].replace("USD", "")) || 0;
+    let precioARS = (precioUSD + ganancia) * dolar;
+
+    let bateria = parseInt(item["Batería"]) || 0;
+    let clase = bateria > 85 ? "green" : bateria >= 80 ? "yellow" : "red";
+
+    tbody.innerHTML += `
+    <tr>
+      <td>${item.Modelo}</td>
+      <td>${item.GB}</td>
+      <td>${item.Color}</td>
+      <td class="${clase}">${bateria}%</td>
+      <td>$${precioUSD}</td>
+      <td>$${precioARS.toLocaleString()}</td>
+    </tr>`;
+  });
+}
+
+cargar();
+</script>
+</body>
+</html>
