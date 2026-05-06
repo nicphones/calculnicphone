@@ -14,13 +14,12 @@
   --text:#f2f4f8;
   --muted:#9ca3af;
   --green:#00ff88;
-  --green2:#00cc70;
   --yellow:#ffd000;
   --red:#ff4d4d;
 }
 
 *{ box-sizing:border-box; }
-
+html{ scroll-behavior:smooth; }
 body{
   margin:0;
   font-family: Arial, sans-serif;
@@ -28,31 +27,10 @@ body{
   color:var(--text);
 }
 
-.container{
-  max-width:1250px;
-  margin:auto;
-  padding:22px;
-}
-
-.header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:15px;
-  margin-bottom:18px;
-}
-
-h2{
-  margin:0;
-  font-size:34px;
-  letter-spacing:.5px;
-}
-
-.subtitulo{
-  color:var(--muted);
-  font-size:14px;
-  margin-top:4px;
-}
+.container{ max-width:1250px; margin:auto; padding:22px; }
+.header{ display:flex; justify-content:space-between; align-items:center; gap:15px; margin-bottom:18px; }
+h2{ margin:0; font-size:34px; letter-spacing:.5px; }
+.subtitulo{ color:var(--muted); font-size:14px; margin-top:4px; }
 
 .panel{
   background:rgba(23,26,33,.9);
@@ -63,113 +41,41 @@ h2{
   margin-bottom:18px;
 }
 
-.controls{
-  display:grid;
-  grid-template-columns: repeat(auto-fit,minmax(190px,1fr));
-  gap:12px;
-  align-items:end;
-}
-
-.field label{
-  display:block;
-  font-size:13px;
-  color:var(--muted);
-  margin-bottom:6px;
-}
-
+.controls{ display:grid; grid-template-columns: repeat(auto-fit,minmax(190px,1fr)); gap:12px; align-items:end; }
+.field label{ display:block; font-size:13px; color:var(--muted); margin-bottom:6px; }
 input{
-  width:100%;
-  padding:12px;
-  border-radius:12px;
-  border:1px solid var(--line);
-  background:#0d1017;
-  color:var(--text);
-  outline:none;
-  font-size:15px;
+  width:100%; padding:12px; border-radius:12px; border:1px solid var(--line);
+  background:#0d1017; color:var(--text); outline:none; font-size:15px;
 }
-
-input:focus{
-  border-color:var(--green);
-  box-shadow:0 0 0 3px rgba(0,255,136,.12);
-}
-
+input:focus{ border-color:var(--green); box-shadow:0 0 0 3px rgba(0,255,136,.12); }
 button{
-  padding:12px 14px;
-  border-radius:12px;
-  border:none;
-  cursor:pointer;
-  font-weight:bold;
-  background:var(--green);
-  color:#07120c;
-  transition:.15s ease;
+  padding:12px 14px; border-radius:12px; border:none; cursor:pointer; font-weight:bold;
+  background:var(--green); color:#07120c; transition:.15s ease;
 }
-
 button:hover{ transform:translateY(-1px); background:#20ffa0; }
 button.secondary{ background:#2a3140; color:var(--text); border:1px solid var(--line); }
 button.secondary:hover{ background:#343c4d; }
+.status{ margin-top:12px; font-size:13px; color:var(--muted); }
 
-.status{
-  margin-top:12px;
-  font-size:13px;
-  color:var(--muted);
-}
+.badge{ display:inline-block; padding:4px 8px; border-radius:8px; background:#252b38; color:var(--muted); font-size:12px; }
 
-.table-wrap{
-  overflow:auto;
-  border-radius:18px;
-  border:1px solid var(--line);
-  box-shadow:0 10px 30px rgba(0,0,0,.25);
-}
-
-table{
-  width:100%;
-  border-collapse:collapse;
-  background:var(--card);
-  min-width:850px;
-}
-
-th,td{
-  border-bottom:1px solid var(--line);
-  padding:10px;
-  text-align:center;
-}
-
-th{
-  position:sticky;
-  top:0;
-  z-index:2;
-  background:var(--card2);
-  color:#fff;
-  font-size:14px;
-}
-
+.table-wrap{ overflow:auto; border-radius:18px; border:1px solid var(--line); box-shadow:0 10px 30px rgba(0,0,0,.25); }
+table{ width:100%; border-collapse:collapse; background:var(--card); min-width:850px; }
+th,td{ border-bottom:1px solid var(--line); padding:10px; text-align:center; }
+th{ position:sticky; top:0; z-index:2; background:var(--card2); color:#fff; font-size:14px; }
 tr:hover td{ background:#1b202b; }
-
-.price-final{
-  font-weight:bold;
-  color:var(--green);
-}
-
-.price-ars{
-  font-weight:bold;
-  font-size:16px;
-}
-
+.group-row td{ background:#101722 !important; color:var(--green); font-weight:bold; text-align:left; font-size:18px; padding:13px 16px; border-top:2px solid var(--line); }
+.price-final{ font-weight:bold; color:var(--green); }
+.price-ars{ font-weight:bold; font-size:16px; }
 .green{ color:var(--green); font-weight:bold; }
 .yellow{ color:var(--yellow); font-weight:bold; }
 .red{ color:var(--red); font-weight:bold; }
 
 .color-pill{
-  display:inline-block;
-  min-width:150px;
-  padding:5px 12px;
-  border-radius:999px;
-  font-weight:bold;
-  text-align:center;
-  border:1px solid rgba(255,255,255,.18);
-  box-shadow: inset 0 -8px 18px rgba(0,0,0,.15);
+  display:inline-block; min-width:110px; padding:4px 10px; border-radius:999px; font-weight:bold;
+  text-align:center; border:1px solid rgba(255,255,255,.18); box-shadow: inset 0 -8px 18px rgba(0,0,0,.15);
+  font-size:12px;
 }
-
 .color-dark{ background:#333; color:white; }
 .color-blue{ background:#0b5ca8; color:white; }
 .color-pink{ background:#ffc9c9; color:#d60000; }
@@ -185,13 +91,48 @@ tr:hover td{ background:#1b202b; }
 .color-titanium-white{ background:#e7e7e2; color:#111; }
 .color-default{ background:#444; color:white; }
 
-.badge{
-  display:inline-block;
-  padding:4px 8px;
-  border-radius:8px;
-  background:#252b38;
-  color:var(--muted);
-  font-size:12px;
+.cards-view{ display:none; }
+body.view-cards .table-wrap{ display:none; }
+body.view-cards .cards-view{ display:block; }
+
+.series-card{
+  background:rgba(23,26,33,.92);
+  border:1px solid var(--line);
+  border-radius:20px;
+  margin-bottom:18px;
+  overflow:hidden;
+  box-shadow:0 10px 30px rgba(0,0,0,.25);
+}
+.series-title{
+  background:#101722;
+  color:var(--green);
+  font-weight:bold;
+  font-size:22px;
+  padding:14px 16px;
+  border-bottom:1px solid var(--line);
+}
+.phone-row{
+  display:grid;
+  grid-template-columns: minmax(250px,1.4fr) 80px 90px 95px 110px 130px;
+  gap:10px;
+  align-items:center;
+  padding:11px 14px;
+  border-bottom:1px solid var(--line);
+}
+.phone-row:last-child{ border-bottom:none; }
+.phone-row:hover{ background:#1b202b; }
+.phone-main{ min-width:0; }
+.phone-name{ font-weight:bold; font-size:16px; display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+.phone-meta{ color:var(--muted); font-size:12px; margin-top:4px; }
+.mobile-label{ display:none; color:var(--muted); font-size:12px; margin-right:6px; }
+.back-top{
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  z-index:20;
+  border-radius:999px;
+  padding:12px 15px;
+  box-shadow:0 8px 24px rgba(0,0,0,.35);
 }
 
 @media(max-width:700px){
@@ -200,57 +141,49 @@ tr:hover td{ background:#1b202b; }
   .header{ align-items:flex-start; }
   .controls{ grid-template-columns:1fr; }
   button{ width:100%; }
-  .table-wrap{ border:none; box-shadow:none; overflow:visible; }
-  table{ min-width:0; background:transparent; }
-  thead{ display:none; }
-  tbody{ display:block; }
-  tr{
-    display:block;
-    background:var(--card);
-    border:1px solid var(--line);
-    border-radius:18px;
-    margin-bottom:14px;
+
+  body.view-table .table-wrap{ border:none; box-shadow:none; overflow:visible; }
+  body.view-table table{ min-width:0; background:transparent; }
+  body.view-table thead{ display:none; }
+  body.view-table tbody{ display:block; }
+  body.view-table tr{ display:block; background:var(--card); border:1px solid var(--line); border-radius:18px; margin-bottom:14px; padding:12px; box-shadow:0 8px 22px rgba(0,0,0,.22); }
+  body.view-table .group-row{ background:transparent; border:none; box-shadow:none; padding:0; margin:22px 0 10px; }
+  body.view-table .group-row td{ display:block; background:#101722 !important; border:1px solid var(--line); border-radius:14px; color:var(--green); font-size:21px; text-align:left; padding:12px 14px; }
+  body.view-table .group-row td::before{ display:none; }
+  body.view-table tr:hover td{ background:transparent; }
+  body.view-table td{ display:flex; justify-content:space-between; align-items:center; gap:12px; border:none; border-bottom:1px solid var(--line); padding:9px 4px; text-align:right; font-size:15px; }
+  body.view-table td:last-child{ border-bottom:none; }
+  body.view-table td::before{ content:attr(data-label); color:var(--muted); font-size:13px; text-align:left; flex-shrink:0; }
+  body.view-table td[data-label="Modelo"]{ display:block; text-align:left; font-size:18px; font-weight:bold; border-bottom:1px solid var(--line); padding-bottom:12px; }
+  body.view-table td[data-label="Modelo"]::before{ display:none; }
+
+  .phone-row{
+    grid-template-columns: 1fr;
+    gap:7px;
     padding:12px;
-    box-shadow:0 8px 22px rgba(0,0,0,.22);
   }
-  tr:hover td{ background:transparent; }
-  td{
+  .phone-name{ font-size:17px; line-height:1.25; }
+  .phone-meta{ display:none; }
+  .mobile-line{
     display:flex;
     justify-content:space-between;
     align-items:center;
-    gap:12px;
-    border:none;
-    border-bottom:1px solid var(--line);
-    padding:9px 4px;
-    text-align:right;
-    font-size:15px;
+    gap:10px;
+    border-top:1px solid var(--line);
+    padding-top:8px;
+    font-size:14px;
   }
-  td:last-child{ border-bottom:none; }
-  td::before{
-    content:attr(data-label);
-    color:var(--muted);
-    font-size:13px;
-    text-align:left;
-    flex-shrink:0;
-  }
-  td[data-label="Modelo"]{
-    display:block;
-    text-align:left;
-    font-size:20px;
-    font-weight:bold;
-    border-bottom:1px solid var(--line);
-    padding-bottom:12px;
-  }
-  td[data-label="Modelo"]::before{ display:none; }
-  .color-pill{ min-width:145px; }
-  .price-final{ font-size:17px; }
+  .mobile-label{ display:inline; }
   .price-ars{ font-size:20px; color:var(--green); }
+  .price-final{ font-size:16px; }
+  .color-pill{ min-width:auto; font-size:11px; padding:3px 8px; }
+  .series-title{ font-size:21px; }
 }
 </style>
 </head>
 
-<body>
-<div class="container">
+<body class="view-cards">
+<div class="container" id="top">
   <div class="header">
     <div>
       <h2>NicPhones</h2>
@@ -273,6 +206,7 @@ tr:hover td{ background:#1b202b; }
 
       <button id="calcularBtn">Calcular</button>
       <button id="toggleBaseBtn" class="secondary">Ocultar Base USD</button>
+      <button id="toggleVistaBtn" class="secondary">Modo tabla</button>
     </div>
 
     <div class="controls" style="margin-top:12px;">
@@ -285,6 +219,8 @@ tr:hover td{ background:#1b202b; }
 
     <div class="status" id="status">Esperando acción</div>
   </div>
+
+  <div id="cardsView" class="cards-view"></div>
 
   <div class="table-wrap">
     <table>
@@ -303,6 +239,7 @@ tr:hover td{ background:#1b202b; }
     </table>
   </div>
 </div>
+<button id="backTopBtn" class="back-top secondary">↑ Arriba</button>
 
 <script>
 const CSV_URL = "https://docs.google.com/spreadsheets/d/1khFdbRuruEomajgpWX8TQ3G30A2i0-BGKo7Zlw-THA8/export?format=csv&gid=0";
@@ -316,31 +253,45 @@ const btn = document.getElementById("calcularBtn");
 const busquedaInput = document.getElementById("busqueda");
 const buscarBtn = document.getElementById("buscarBtn");
 const toggleBaseBtn = document.getElementById("toggleBaseBtn");
+const toggleVistaBtn = document.getElementById("toggleVistaBtn");
+const backTopBtn = document.getElementById("backTopBtn");
+const cardsView = document.getElementById("cardsView");
 
 let baseVisible = localStorage.getItem("baseVisible");
 if(baseVisible === null) baseVisible = "true";
+let vista = localStorage.getItem("vista") || "cards";
+document.body.classList.toggle("view-cards", vista === "cards");
+document.body.classList.toggle("view-table", vista === "table");
+
+function parseCSV(text){
+  const rows = [];
+  let row = [], cell = "", insideQuotes = false;
+  for(let i = 0; i < text.length; i++){
+    const char = text[i], next = text[i + 1];
+    if(char === '"' && insideQuotes && next === '"'){ cell += '"'; i++; }
+    else if(char === '"'){ insideQuotes = !insideQuotes; }
+    else if(char === ',' && !insideQuotes){ row.push(cell); cell = ""; }
+    else if((char === '\n' || char === '\r') && !insideQuotes){ if(char === '\r' && next === '\n') i++; row.push(cell); rows.push(row); row = []; cell = ""; }
+    else{ cell += char; }
+  }
+  row.push(cell); rows.push(row);
+  return rows;
+}
+
+function normalizarTexto(texto){
+  return (texto || "").toString().trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
 
 function limpiarNumero(valor){
   if(!valor) return 0;
-
-  let v = valor.toString()
-    .replace(/USD/gi, "")
-    .replace(/\$/g, "")
-    .trim();
-
-  if (/^\d{1,3}(,\d{3})+$/.test(v)) {
-    v = v.replace(/,/g, "");
-  } else if (v.includes(",")) {
-    v = v.replace(/\./g, "");
-    v = v.replace(",", ".");
-  }
-
+  let v = valor.toString().replace(/USD/gi, "").replace(/\$/g, "").replace(/\s/g, "").trim();
+  if (/^\d{1,3}(,\d{3})+$/.test(v)) v = v.replace(/,/g, "");
+  else if (v.includes(",")){ v = v.replace(/\./g, ""); v = v.replace(",", "."); }
   return Math.floor(parseFloat(v)) || 0;
 }
 
 function claseColor(color){
-  const c = (color || "").toLowerCase().trim();
-
+  const c = normalizarTexto(color);
   if(c.includes("blue titanium")) return "color-titanium-blue";
   if(c.includes("black titanium")) return "color-titanium-black";
   if(c.includes("white titanium")) return "color-titanium-white";
@@ -354,70 +305,136 @@ function claseColor(color){
   if(c.includes("green")) return "color-green-pill";
   if(c.includes("purple")) return "color-purple";
   if(c.includes("red")) return "color-red-pill";
-
   return "color-default";
+}
+
+function grupoModelo(modelo){
+  const m = normalizarTexto(modelo);
+  if(m.includes("iphone 17")) return "iPhone 17";
+  if(m.includes("iphone 16")) return "iPhone 16";
+  if(m.includes("iphone 15")) return "iPhone 15";
+  if(m.includes("iphone 14")) return "iPhone 14";
+  if(m.includes("iphone 13")) return "iPhone 13";
+  if(m.includes("iphone 12")) return "iPhone 12";
+  if(m.includes("iphone 11")) return "iPhone 11";
+  if(m.includes("iphone x")) return "iPhone X";
+  if(m.includes("iphone se")) return "iPhone SE";
+  return "Otros modelos";
+}
+
+function buscarIndice(headers, opciones, fallback){
+  const normalizados = headers.map(h => normalizarTexto(h));
+  for(const op of opciones){
+    const i = normalizados.findIndex(h => h.includes(op));
+    if(i !== -1) return i;
+  }
+  return fallback;
 }
 
 function actualizarBaseUSD(){
   const columnas = document.querySelectorAll(".baseUsdCol");
+  columnas.forEach(col => { col.style.display = baseVisible === "true" ? "" : "none"; });
+  toggleBaseBtn.textContent = baseVisible === "true" ? "Ocultar Base USD" : "Mostrar Base USD";
+}
 
-  columnas.forEach(col => {
-    col.style.display = baseVisible === "true" ? "" : "none";
+function actualizarVista(){
+  document.body.classList.toggle("view-cards", vista === "cards");
+  document.body.classList.toggle("view-table", vista === "table");
+  toggleVistaBtn.textContent = vista === "cards" ? "Modo tabla" : "Modo tarjetas";
+}
+
+function renderTabla(equipos){
+  const tbody = document.getElementById("tabla");
+  tbody.innerHTML = "";
+  let grupoActual = "";
+  equipos.forEach(eq => {
+    if(eq.grupo !== grupoActual){
+      tbody.innerHTML += `<tr class="group-row"><td colspan="7">${eq.grupo}</td></tr>`;
+      grupoActual = eq.grupo;
+    }
+    tbody.innerHTML += `
+      <tr data-search="${eq.search}">
+        <td data-label="Modelo">${eq.modelo} <span class="color-pill ${claseColor(eq.color)}">${eq.color}</span></td>
+        <td data-label="GB">${eq.gb}</td>
+        <td data-label="Color"><span class="color-pill ${claseColor(eq.color)}">${eq.color}</span></td>
+        <td data-label="Batería" class="${eq.claseBateria}">${eq.bateria}%</td>
+        <td data-label="Base USD" class="baseUsdCol">$${eq.precioUSD}</td>
+        <td data-label="Final USD" class="price-final">$${eq.finalUSD}</td>
+        <td data-label="Precio ARS" class="price-ars">$${eq.precioARS.toLocaleString()}</td>
+      </tr>`;
+  });
+}
+
+function renderCards(equipos){
+  cardsView.innerHTML = "";
+  const grupos = {};
+  equipos.forEach(eq => {
+    if(!grupos[eq.grupo]) grupos[eq.grupo] = [];
+    grupos[eq.grupo].push(eq);
   });
 
-  toggleBaseBtn.textContent = baseVisible === "true" ? "Ocultar Base USD" : "Mostrar Base USD";
+  Object.keys(grupos).forEach(grupo => {
+    const card = document.createElement("div");
+    card.className = "series-card";
+    card.innerHTML = `<div class="series-title">${grupo}</div>`;
+    grupos[grupo].forEach(eq => {
+      card.innerHTML += `
+      <div class="phone-row" data-search="${eq.search}">
+        <div class="phone-main">
+          <div class="phone-name">${eq.modelo} <span class="color-pill ${claseColor(eq.color)}">${eq.color}</span></div>
+          <div class="phone-meta">${eq.gb} GB · Batería ${eq.bateria}%</div>
+        </div>
+        <div class="mobile-line"><span class="mobile-label">GB</span>${eq.gb}</div>
+        <div class="mobile-line"><span class="mobile-label">Batería</span><span class="${eq.claseBateria}">${eq.bateria}%</span></div>
+        <div class="mobile-line baseUsdCol"><span class="mobile-label">Base</span>$${eq.precioUSD}</div>
+        <div class="mobile-line price-final"><span class="mobile-label">Final USD</span>$${eq.finalUSD}</div>
+        <div class="mobile-line price-ars"><span class="mobile-label">ARS</span>$${eq.precioARS.toLocaleString()}</div>
+      </div>`;
+    });
+    cardsView.appendChild(card);
+  });
 }
 
 async function cargar(){
   try{
     status.textContent = "Cargando stock...";
-
     const res = await fetch(CSV_URL + "&t=" + Date.now());
     const text = await res.text();
+    const filas = parseCSV(text);
+    const headerIndex = filas.findIndex(f => f.some(c => normalizarTexto(c) === "modelo"));
+    if(headerIndex === -1){ status.textContent = "No se encontró la tabla del proveedor"; return; }
 
-    const filas = text.split("\n").map(f => f.split(","));
-    const headerIndex = filas.findIndex(f => f.includes("Modelo"));
-    if(headerIndex === -1){
-      status.textContent = "No se encontró la tabla del proveedor";
-      return;
-    }
+    const headers = filas[headerIndex];
+    const idxModelo = buscarIndice(headers, ["modelo"], 0);
+    const idxGB = buscarIndice(headers, ["gb", "almacenamiento", "storage"], 1);
+    const idxColor = buscarIndice(headers, ["color"], 2);
+    const idxBateria = buscarIndice(headers, ["bateria", "battery"], 3);
+    const idxPrecio = buscarIndice(headers, ["precio lista", "precio", "usd", "base"], 5);
 
     const data = filas.slice(headerIndex + 1);
-    const tbody = document.getElementById("tabla");
-    tbody.innerHTML = "";
-
     const dolar = parseFloat(dolarInput.value) || 0;
     const ganancia = parseFloat(gananciaInput.value) || 0;
-
-    let cantidad = 0;
+    const equipos = [];
 
     data.forEach(f => {
-      if(!f[0]) return;
-
-      const bateria = parseInt(f[3]) || 0;
-      const precioUSD = limpiarNumero(f[5]);
+      const modelo = f[idxModelo] || "";
+      if(!modelo.trim()) return;
+      const gb = f[idxGB] || "";
+      const color = f[idxColor] || "";
+      const bateria = parseInt(f[idxBateria]) || 0;
+      const precioUSD = limpiarNumero(f[idxPrecio]);
       const finalUSD = precioUSD + ganancia;
       const precioARS = finalUSD * dolar;
       const claseBateria = bateria > 85 ? "green" : bateria >= 80 ? "yellow" : "red";
-      const color = f[2] || "";
-
-      tbody.innerHTML += `
-      <tr>
-        <td data-label="Modelo">${f[0]}</td>
-        <td data-label="GB">${f[1]}</td>
-        <td data-label="Color"><span class="color-pill ${claseColor(color)}">${color}</span></td>
-        <td data-label="Batería" class="${claseBateria}">${bateria}%</td>
-        <td data-label="Base USD" class="baseUsdCol">$${precioUSD}</td>
-        <td data-label="Final USD" class="price-final">$${finalUSD}</td>
-        <td data-label="Precio ARS" class="price-ars">$${precioARS.toLocaleString()}</td>
-      </tr>`;
-
-      cantidad++;
+      const grupo = grupoModelo(modelo);
+      equipos.push({ modelo, gb, color, bateria, precioUSD, finalUSD, precioARS, claseBateria, grupo, search: normalizarTexto(`${modelo} ${gb} ${color} ${bateria} ${precioUSD} ${finalUSD} ${precioARS}`) });
     });
 
+    renderTabla(equipos);
+    renderCards(equipos);
     actualizarBaseUSD();
-    status.textContent = `Stock cargado: ${cantidad} equipos`;
-
+    actualizarVista();
+    status.textContent = `Stock cargado: ${equipos.length} equipos`;
   }catch(e){
     console.log(e);
     status.textContent = "Error al cargar stock";
@@ -428,26 +445,16 @@ async function cargarConfig(){
   try{
     const res = await fetch(CONFIG_URL + "&t=" + Date.now());
     const text = await res.text();
-    const filas = text.split("\n").map(f => f.split(","));
-
+    const filas = parseCSV(text);
     filas.forEach(f => {
-      const key = (f[0] || "")
-        .trim()
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "");
-
+      const key = normalizarTexto(f[0]);
       const value = (f[1] || "").trim();
-
       if(key === "dolar") dolarInput.value = value;
       if(key === "ganancia") gananciaInput.value = value;
     });
-
     if(!dolarInput.value) dolarInput.value = localStorage.getItem("dolar") || "";
     if(!gananciaInput.value) gananciaInput.value = localStorage.getItem("ganancia") || "";
-
   }catch(e){
-    console.log("Error config", e);
     dolarInput.value = localStorage.getItem("dolar") || "";
     gananciaInput.value = localStorage.getItem("ganancia") || "";
   }
@@ -456,63 +463,39 @@ async function cargarConfig(){
 async function guardarYCalcular(){
   try{
     status.textContent = "Guardando...";
-
     const url = `${WEBHOOK_URL}?dolar=${encodeURIComponent(dolarInput.value)}&ganancia=${encodeURIComponent(gananciaInput.value)}&t=${Date.now()}`;
-
     const iframe = document.createElement("iframe");
     iframe.style.display = "none";
     iframe.src = url;
     document.body.appendChild(iframe);
-
     localStorage.setItem("dolar", dolarInput.value);
     localStorage.setItem("ganancia", gananciaInput.value);
-
     status.textContent = "Guardado enviado";
-
-    setTimeout(() => {
-      iframe.remove();
-      status.textContent = "Guardado correctamente";
-      cargar();
-    }, 1500);
-
-  }catch(e){
-    console.log(e);
-    status.textContent = "Error al guardar";
-  }
+    setTimeout(() => { iframe.remove(); status.textContent = "Guardado correctamente"; cargar(); }, 1500);
+  }catch(e){ status.textContent = "Error al guardar"; }
 }
 
 function buscarFila(){
-  const texto = busquedaInput.value.trim().toLowerCase();
+  const texto = normalizarTexto(busquedaInput.value);
   if(!texto) return;
-
-  const filas = document.querySelectorAll("#tabla tr");
+  const filas = document.querySelectorAll('[data-search]');
   filas.forEach(fila => fila.style.outline = "none");
-
   for(const fila of filas){
-    const contenido = fila.textContent.toLowerCase();
-
-    if(contenido.includes(texto)){
+    if((fila.dataset.search || "").includes(texto)){
       fila.scrollIntoView({ behavior: "smooth", block: "center" });
       fila.style.outline = "3px solid #00ff88";
       return;
     }
   }
-
   status.textContent = "No se encontró ningún resultado";
 }
 
 btn.addEventListener("click", guardarYCalcular);
 buscarBtn.addEventListener("click", buscarFila);
-
-busquedaInput.addEventListener("keydown", function(e){
-  if(e.key === "Enter") buscarFila();
-});
-
-toggleBaseBtn.addEventListener("click", () => {
-  baseVisible = baseVisible === "true" ? "false" : "true";
-  localStorage.setItem("baseVisible", baseVisible);
-  actualizarBaseUSD();
-});
+busquedaInput.addEventListener("keydown", e => { if(e.key === "Enter") buscarFila(); });
+toggleBaseBtn.addEventListener("click", () => { baseVisible = baseVisible === "true" ? "false" : "true"; localStorage.setItem("baseVisible", baseVisible); actualizarBaseUSD(); });
+toggleVistaBtn.addEventListener("click", () => { vista = vista === "cards" ? "table" : "cards"; localStorage.setItem("vista", vista); actualizarVista(); });
+backTopBtn.addEventListener("click", () => window.scrollTo({ top:0, behavior:"smooth" }));
 
 (async () => {
   await cargarConfig();
