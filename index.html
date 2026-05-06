@@ -122,20 +122,23 @@ async function guardarYCalcular(){
   try{
     status.textContent = "Guardando...";
 
-    await fetch(`${WEBHOOK_URL}?dolar=${encodeURIComponent(dolarInput.value)}&ganancia=${encodeURIComponent(gananciaInput.value)}`, {
-      mode: "no-cors"
-    });
+    const url = `${WEBHOOK_URL}?dolar=${encodeURIComponent(dolarInput.value)}&ganancia=${encodeURIComponent(gananciaInput.value)}&t=${Date.now()}`;
+
+    const iframe = document.createElement("iframe");
+    iframe.style.display = "none";
+    iframe.src = url;
+    document.body.appendChild(iframe);
 
     localStorage.setItem("dolar", dolarInput.value);
     localStorage.setItem("ganancia", gananciaInput.value);
 
-    status.textContent = "Guardado (sincronizando...)";
+    status.textContent = "Guardado enviado";
 
     setTimeout(() => {
+      iframe.remove();
       status.textContent = "Guardado correctamente";
-    }, 1000);
-
-    cargar();
+      cargar();
+    }, 1500);
 
   }catch(e){
     console.log(e);
