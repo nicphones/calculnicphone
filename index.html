@@ -18,10 +18,9 @@ th { background:#222; }
 .red { color:#ff4d4d; }
 .status { margin-top:10px; font-size:13px; color:#aaa; }
 </style>
-
 </head>
-<body>
 
+<body>
 <div class="container">
 <h2>NicPhones</h2>
 
@@ -32,8 +31,10 @@ th { background:#222; }
 <input type="number" id="ganancia">
 
 <button id="calcularBtn">Calcular</button>
+<button id="toggleBaseBtn">Ocultar Base USD</button>
 
 <br>
+
 <label>Buscar: </label>
 <input type="text" id="busqueda" placeholder="Buscar">
 <button id="buscarBtn">Buscar</button>
@@ -47,7 +48,7 @@ th { background:#222; }
 <th>GB</th>
 <th>Color</th>
 <th>Batería</th>
-<th>Base USD</th>
+<th class="baseUsdCol">Base USD</th>
 <th>Final USD</th>
 <th>Precio ARS</th>
 </tr>
@@ -57,7 +58,6 @@ th { background:#222; }
 </div>
 
 <script>
-
 const CSV_URL = "https://docs.google.com/spreadsheets/d/1khFdbRuruEomajgpWX8TQ3G30A2i0-BGKo7Zlw-THA8/export?format=csv&gid=0";
 const CONFIG_URL = "https://docs.google.com/spreadsheets/d/1WDvG9oA0WTwzwBdeSMAt1kTvWn3UQUYkAXbA6jutvDE/export?format=csv&gid=0";
 const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbygia2T_Hbh9H9AkCK_IEykgwSSxBoGysdj-y6BsDHaT2PKYu5iBRx14Ea1ign8MU23/exec";
@@ -68,6 +68,10 @@ const status = document.getElementById("status");
 const btn = document.getElementById("calcularBtn");
 const busquedaInput = document.getElementById("busqueda");
 const buscarBtn = document.getElementById("buscarBtn");
+const toggleBaseBtn = document.getElementById("toggleBaseBtn");
+
+let baseVisible = localStorage.getItem("baseVisible");
+if(baseVisible === null) baseVisible = "true";
 
 function limpiarNumero(valor){
   if(!valor) return 0;
@@ -85,6 +89,19 @@ function limpiarNumero(valor){
   }
 
   return Math.floor(parseFloat(v)) || 0;
+}
+
+function actualizarBaseUSD(){
+  const columnas = document.querySelectorAll(".baseUsdCol");
+
+  columnas.forEach(col => {
+    col.style.display = baseVisible === "true" ? "" : "none";
+  });
+
+  toggleBaseBtn.textContent =
+    baseVisible === "true"
+      ? "Ocultar Base USD"
+      : "Mostrar Base USD";
 }
 
 async function cargar(){
@@ -118,11 +135,13 @@ async function cargar(){
       <td>${f[1]}</td>
       <td>${f[2]}</td>
       <td class="${clase}">${bateria}%</td>
-      <td>$${precioUSD}</td>
+      <td class="baseUsdCol">$${precioUSD}</td>
       <td>$${finalUSD}</td>
       <td>$${precioARS.toLocaleString()}</td>
     </tr>`;
   });
+
+  actualizarBaseUSD();
 }
 
 async function cargarConfig(){
@@ -154,35 +173,6 @@ async function cargarConfig(){
   }
 }
 
-btn.addEventListener("click", guardarYCalcular);
-
-function buscarFila(){
-  const texto = busquedaInput.value.trim().toLowerCase();
-  if(!texto) return;
-
-  const filas = document.querySelectorAll("#tabla tr");
-
-  filas.forEach(fila => fila.style.outline = "none");
-
-  for(const fila of filas){
-    const contenido = fila.textContent.toLowerCase();
-
-    if(contenido.includes(texto)){
-      fila.scrollIntoView({ behavior: "smooth", block: "center" });
-      fila.style.outline = "3px solid #00ff88";
-      return;
-    }
-  }
-
-  status.textContent = "No se encontró ningún resultado";
-}
-
-buscarBtn.addEventListener("click", buscarFila);
-
-busquedaInput.addEventListener("keydown", function(e){
-  if(e.key === "Enter") buscarFila();
-});
-
 async function guardarYCalcular(){
   try{
     status.textContent = "Guardando...";
@@ -211,14 +201,43 @@ async function guardarYCalcular(){
   }
 }
 
-btn.addEventListener("click", guardarYCalcular);  
-  
+function buscarFila(){
+  const texto = busquedaInput.value.trim().toLowerCase();
+  if(!texto) return;
+
+  const filas = document.querySelectorAll("#tabla tr");
+  filas.forEach(fila => fila.style.outline = "none");
+
+  for(const fila of filas){
+    const contenido = fila.textContent.toLowerCase();
+
+    if(contenido.includes(texto)){
+      fila.scrollIntoView({ behavior: "smooth", block: "center" });
+      fila.style.outline = "3px solid #00ff88";
+      return;
+    }
+  }
+
+  status.textContent = "No se encontró ningún resultado";
+}
+
+btn.addEventListener("click", guardarYCalcular);
+buscarBtn.addEventListener("click", buscarFila);
+
+busquedaInput.addEventListener("keydown", function(e){
+  if(e.key === "Enter") buscarFila();
+});
+
+toggleBaseBtn.addEventListener("click", () => {
+  baseVisible = baseVisible === "true" ? "false" : "true";
+  localStorage.setItem("baseVisible", baseVisible);
+  actualizarBaseUSD();
+});
+
 (async () => {
   await cargarConfig();
-  cargar();
+  await cargar();
 })();
-
 </script>
-
 </body>
 </html>
