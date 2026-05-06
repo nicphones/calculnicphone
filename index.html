@@ -3,58 +3,259 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Calculadora iPhone</title>
+<title>NicPhones</title>
 
 <style>
-body { font-family: Arial; background:#111; color:#eee; }
-.container { max-width:1200px; margin:auto; padding:20px; }
-input, button { padding:8px; margin:5px; }
-button { background:#00ff88; border:none; cursor:pointer; font-weight:bold; }
-table { width:100%; border-collapse: collapse; margin-top:20px; }
-th, td { border:1px solid #333; padding:8px; text-align:center; }
-th { background:#222; }
-.green { color:#00ff88; }
-.yellow { color:#ffd000; }
-.red { color:#ff4d4d; }
-.status { margin-top:10px; font-size:13px; color:#aaa; }
+:root{
+  --bg:#0f1115;
+  --card:#171a21;
+  --card2:#1f2430;
+  --line:#2b3140;
+  --text:#f2f4f8;
+  --muted:#9ca3af;
+  --green:#00ff88;
+  --green2:#00cc70;
+  --yellow:#ffd000;
+  --red:#ff4d4d;
+}
+
+*{ box-sizing:border-box; }
+
+body{
+  margin:0;
+  font-family: Arial, sans-serif;
+  background:linear-gradient(135deg,#0b0d12,#151924);
+  color:var(--text);
+}
+
+.container{
+  max-width:1250px;
+  margin:auto;
+  padding:22px;
+}
+
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  margin-bottom:18px;
+}
+
+h2{
+  margin:0;
+  font-size:34px;
+  letter-spacing:.5px;
+}
+
+.subtitulo{
+  color:var(--muted);
+  font-size:14px;
+  margin-top:4px;
+}
+
+.panel{
+  background:rgba(23,26,33,.9);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:16px;
+  box-shadow:0 10px 30px rgba(0,0,0,.25);
+  margin-bottom:18px;
+}
+
+.controls{
+  display:grid;
+  grid-template-columns: repeat(auto-fit,minmax(190px,1fr));
+  gap:12px;
+  align-items:end;
+}
+
+.field label{
+  display:block;
+  font-size:13px;
+  color:var(--muted);
+  margin-bottom:6px;
+}
+
+input{
+  width:100%;
+  padding:12px;
+  border-radius:12px;
+  border:1px solid var(--line);
+  background:#0d1017;
+  color:var(--text);
+  outline:none;
+  font-size:15px;
+}
+
+input:focus{
+  border-color:var(--green);
+  box-shadow:0 0 0 3px rgba(0,255,136,.12);
+}
+
+button{
+  padding:12px 14px;
+  border-radius:12px;
+  border:none;
+  cursor:pointer;
+  font-weight:bold;
+  background:var(--green);
+  color:#07120c;
+  transition:.15s ease;
+}
+
+button:hover{ transform:translateY(-1px); background:#20ffa0; }
+button.secondary{ background:#2a3140; color:var(--text); border:1px solid var(--line); }
+button.secondary:hover{ background:#343c4d; }
+
+.status{
+  margin-top:12px;
+  font-size:13px;
+  color:var(--muted);
+}
+
+.table-wrap{
+  overflow:auto;
+  border-radius:18px;
+  border:1px solid var(--line);
+  box-shadow:0 10px 30px rgba(0,0,0,.25);
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  background:var(--card);
+  min-width:850px;
+}
+
+th,td{
+  border-bottom:1px solid var(--line);
+  padding:10px;
+  text-align:center;
+}
+
+th{
+  position:sticky;
+  top:0;
+  z-index:2;
+  background:var(--card2);
+  color:#fff;
+  font-size:14px;
+}
+
+tr:hover td{ background:#1b202b; }
+
+.price-final{
+  font-weight:bold;
+  color:var(--green);
+}
+
+.price-ars{
+  font-weight:bold;
+  font-size:16px;
+}
+
+.green{ color:var(--green); font-weight:bold; }
+.yellow{ color:var(--yellow); font-weight:bold; }
+.red{ color:var(--red); font-weight:bold; }
+
+.color-pill{
+  display:inline-block;
+  min-width:150px;
+  padding:5px 12px;
+  border-radius:999px;
+  font-weight:bold;
+  text-align:center;
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow: inset 0 -8px 18px rgba(0,0,0,.15);
+}
+
+.color-dark{ background:#333; color:white; }
+.color-blue{ background:#0b5ca8; color:white; }
+.color-pink{ background:#ffc9c9; color:#d60000; }
+.color-white{ background:#f1f1f1; color:#111; }
+.color-silver{ background:#d8d8d8; color:#111; }
+.color-gold{ background:#d8b66b; color:#111; }
+.color-green-pill{ background:#9fc7a9; color:#102015; }
+.color-purple{ background:#b5a0e8; color:#160b33; }
+.color-red-pill{ background:#c62828; color:white; }
+.color-natural{ background:#c8c2b7; color:#111; }
+.color-titanium-blue{ background:#1f6171; color:white; }
+.color-titanium-black{ background:#333; color:white; }
+.color-titanium-white{ background:#e7e7e2; color:#111; }
+.color-default{ background:#444; color:white; }
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  border-radius:8px;
+  background:#252b38;
+  color:var(--muted);
+  font-size:12px;
+}
+
+@media(max-width:700px){
+  .container{ padding:14px; }
+  h2{ font-size:28px; }
+  .controls{ grid-template-columns:1fr; }
+  .color-pill{ min-width:120px; }
+}
 </style>
 </head>
 
 <body>
 <div class="container">
-<h2>NicPhones</h2>
+  <div class="header">
+    <div>
+      <h2>NicPhones</h2>
+      <div class="subtitulo">Calculadora de precios con stock actualizado</div>
+    </div>
+    <span class="badge">Proveedor online</span>
+  </div>
 
-<label>Dólar: </label>
-<input type="number" id="dolar">
+  <div class="panel">
+    <div class="controls">
+      <div class="field">
+        <label>Dólar</label>
+        <input type="number" id="dolar" placeholder="Ej: 1250">
+      </div>
 
-<label>Ganancia (USD): </label>
-<input type="number" id="ganancia">
+      <div class="field">
+        <label>Ganancia (USD)</label>
+        <input type="number" id="ganancia" placeholder="Ej: 40">
+      </div>
 
-<button id="calcularBtn">Calcular</button>
-<button id="toggleBaseBtn">Ocultar Base USD</button>
+      <button id="calcularBtn">Calcular</button>
+      <button id="toggleBaseBtn" class="secondary">Ocultar Base USD</button>
+    </div>
 
-<br>
+    <div class="controls" style="margin-top:12px;">
+      <div class="field">
+        <label>Buscar equipo</label>
+        <input type="text" id="busqueda" placeholder="Ej: iPhone 13 blue 128">
+      </div>
+      <button id="buscarBtn" class="secondary">Buscar</button>
+    </div>
 
-<label>Buscar: </label>
-<input type="text" id="busqueda" placeholder="Buscar">
-<button id="buscarBtn">Buscar</button>
+    <div class="status" id="status">Esperando acción</div>
+  </div>
 
-<div class="status" id="status">Esperando acción</div>
-
-<table>
-<thead>
-<tr>
-<th>Modelo</th>
-<th>GB</th>
-<th>Color</th>
-<th>Batería</th>
-<th class="baseUsdCol">Base USD</th>
-<th>Final USD</th>
-<th>Precio ARS</th>
-</tr>
-</thead>
-<tbody id="tabla"></tbody>
-</table>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Modelo</th>
+          <th>GB</th>
+          <th>Color</th>
+          <th>Batería</th>
+          <th class="baseUsdCol">Base USD</th>
+          <th>Final USD</th>
+          <th>Precio ARS</th>
+        </tr>
+      </thead>
+      <tbody id="tabla"></tbody>
+    </table>
+  </div>
 </div>
 
 <script>
@@ -91,6 +292,26 @@ function limpiarNumero(valor){
   return Math.floor(parseFloat(v)) || 0;
 }
 
+function claseColor(color){
+  const c = (color || "").toLowerCase().trim();
+
+  if(c.includes("blue titanium")) return "color-titanium-blue";
+  if(c.includes("black titanium")) return "color-titanium-black";
+  if(c.includes("white titanium")) return "color-titanium-white";
+  if(c.includes("natural")) return "color-natural";
+  if(c.includes("midnight") || c.includes("black") || c.includes("graphite")) return "color-dark";
+  if(c.includes("blue")) return "color-blue";
+  if(c.includes("pink")) return "color-pink";
+  if(c.includes("white") || c.includes("starlight")) return "color-white";
+  if(c.includes("silver")) return "color-silver";
+  if(c.includes("gold")) return "color-gold";
+  if(c.includes("green")) return "color-green-pill";
+  if(c.includes("purple")) return "color-purple";
+  if(c.includes("red")) return "color-red-pill";
+
+  return "color-default";
+}
+
 function actualizarBaseUSD(){
   const columnas = document.querySelectorAll(".baseUsdCol");
 
@@ -98,50 +319,63 @@ function actualizarBaseUSD(){
     col.style.display = baseVisible === "true" ? "" : "none";
   });
 
-  toggleBaseBtn.textContent =
-    baseVisible === "true"
-      ? "Ocultar Base USD"
-      : "Mostrar Base USD";
+  toggleBaseBtn.textContent = baseVisible === "true" ? "Ocultar Base USD" : "Mostrar Base USD";
 }
 
 async function cargar(){
-  const res = await fetch(CSV_URL);
-  const text = await res.text();
+  try{
+    status.textContent = "Cargando stock...";
 
-  const filas = text.split("\n").map(f => f.split(","));
-  const headerIndex = filas.findIndex(f => f.includes("Modelo"));
-  if(headerIndex === -1) return;
+    const res = await fetch(CSV_URL + "&t=" + Date.now());
+    const text = await res.text();
 
-  const data = filas.slice(headerIndex + 1);
-  const tbody = document.getElementById("tabla");
-  tbody.innerHTML = "";
+    const filas = text.split("\n").map(f => f.split(","));
+    const headerIndex = filas.findIndex(f => f.includes("Modelo"));
+    if(headerIndex === -1){
+      status.textContent = "No se encontró la tabla del proveedor";
+      return;
+    }
 
-  const dolar = parseFloat(dolarInput.value) || 0;
-  const ganancia = parseFloat(gananciaInput.value) || 0;
+    const data = filas.slice(headerIndex + 1);
+    const tbody = document.getElementById("tabla");
+    tbody.innerHTML = "";
 
-  data.forEach(f => {
-    if(!f[0]) return;
+    const dolar = parseFloat(dolarInput.value) || 0;
+    const ganancia = parseFloat(gananciaInput.value) || 0;
 
-    const bateria = parseInt(f[3]) || 0;
-    const precioUSD = limpiarNumero(f[5]);
-    const finalUSD = precioUSD + ganancia;
-    const precioARS = finalUSD * dolar;
+    let cantidad = 0;
 
-    const clase = bateria > 85 ? "green" : bateria >= 80 ? "yellow" : "red";
+    data.forEach(f => {
+      if(!f[0]) return;
 
-    tbody.innerHTML += `
-    <tr>
-      <td>${f[0]}</td>
-      <td>${f[1]}</td>
-      <td>${f[2]}</td>
-      <td class="${clase}">${bateria}%</td>
-      <td class="baseUsdCol">$${precioUSD}</td>
-      <td>$${finalUSD}</td>
-      <td>$${precioARS.toLocaleString()}</td>
-    </tr>`;
-  });
+      const bateria = parseInt(f[3]) || 0;
+      const precioUSD = limpiarNumero(f[5]);
+      const finalUSD = precioUSD + ganancia;
+      const precioARS = finalUSD * dolar;
+      const claseBateria = bateria > 85 ? "green" : bateria >= 80 ? "yellow" : "red";
+      const color = f[2] || "";
 
-  actualizarBaseUSD();
+      tbody.innerHTML += `
+      <tr>
+        <td>${f[0]}</td>
+        <td>${f[1]}</td>
+        <td><span class="color-pill ${claseColor(color)}">${color}</span></td>
+        <td class="${claseBateria}">${bateria}%</td>
+        <td class="baseUsdCol">$${precioUSD}</td>
+        <td class="price-final">$${finalUSD}</td>
+        <td class="price-ars">$${precioARS.toLocaleString()}</td>
+      </tr>`;
+
+      cantidad++;
+    });
+
+    actualizarBaseUSD();
+    status.textContent = `Stock cargado: ${cantidad} equipos`;
+
+  }catch(e){
+    console.log(e);
+    status.textContent = "Error al cargar stock";
+  }
 }
 
 async function cargarConfig(){
