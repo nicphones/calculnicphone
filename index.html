@@ -113,7 +113,7 @@ body.view-cards .cards-view{ display:block; }
 }
 .phone-row{
   display:grid;
-  grid-template-columns: minmax(250px,1.4fr) 80px 90px 95px 110px 130px;
+  grid-template-columns: minmax(250px,1.4fr) 80px 90px 110px 130px;
   gap:10px;
   align-items:center;
   padding:11px 14px;
@@ -226,13 +226,11 @@ body.view-cards .cards-view{ display:block; }
     <table>
       <thead>
         <tr>
-          <th>Modelo</th>
-          <th>GB</th>
-          <th>Color</th>
-          <th>Batería</th>
-          <th class="baseUsdCol">Base USD</th>
-          <th>Final USD</th>
-          <th>Precio ARS</th>
+          <th>Línea</th>
+          <th>📦</th>
+          <th>🔋</th>
+          <th class="baseUsdCol">USD</th>
+          <th>PESOS</th>
         </tr>
       </thead>
       <tbody id="tabla"></tbody>
@@ -354,13 +352,29 @@ function renderTabla(equipos){
     }
     tbody.innerHTML += `
       <tr data-search="${eq.search}">
-        <td data-label="Modelo">${eq.modelo} <span class="color-pill ${claseColor(eq.color)}">${eq.color}</span></td>
-        <td data-label="GB">${eq.gb}</td>
-        <td data-label="Color"><span class="color-pill ${claseColor(eq.color)}">${eq.color}</span></td>
-        <td data-label="Batería" class="${eq.claseBateria}">${eq.bateria}%</td>
-        <td data-label="Base USD" class="baseUsdCol">$${eq.precioUSD}</td>
-        <td data-label="Final USD" class="price-final">$${eq.finalUSD}</td>
-        <td data-label="Precio ARS" class="price-ars">$${eq.precioARS.toLocaleString()}</td>
+        <td data-label="Línea">
+          <div style="font-weight:bold; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+            ${eq.modelo}
+            <span class="color-pill ${claseColor(eq.color)}">${eq.color}</span>
+          </div>
+        </td>
+
+        <td data-label="📦">
+          <span class="badge">${eq.gb} GB</span>
+        </td>
+
+        <td data-label="🔋" class="${eq.claseBateria}">
+          ${eq.bateria}%
+        </td>
+
+        <td data-label="USD" class="baseUsdCol">
+          <div>$${eq.finalUSD}</div>
+          <div style="font-size:11px; color:var(--muted);">Base $${eq.precioUSD}</div>
+        </td>
+
+        <td data-label="PESOS" class="price-ars">
+          $${eq.precioARS.toLocaleString()}
+        </td>
       </tr>`;
   });
 }
