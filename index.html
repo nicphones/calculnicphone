@@ -113,16 +113,28 @@ body.view-cards .cards-view{ display:block; }
 }
 .phone-row{
   display:grid;
-  grid-template-columns: minmax(250px,1.4fr) 80px 90px 110px 130px;
+  grid-template-columns:minmax(280px,1.5fr) 90px 90px 130px 150px;
   gap:10px;
   align-items:center;
-  padding:11px 14px;
+  padding:10px 14px;
   border-bottom:1px solid var(--line);
+  background:#121826;
 }
 .phone-row:last-child{ border-bottom:none; }
 .phone-row:hover{ background:#1b202b; }
-.phone-main{ min-width:0; }
-.phone-name{ font-weight:bold; font-size:16px; display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+.phone-main{ min-width:0; display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+.phone-name{
+  font-weight:bold;
+  font-size:16px;
+  display:flex;
+  gap:10px;
+  align-items:center;
+  flex-wrap:wrap;
+  background:#0f1625;
+  padding:8px 12px;
+  border-radius:12px;
+  border:1px solid #263047;
+}
 .phone-meta{ color:var(--muted); font-size:12px; margin-top:4px; }
 .mobile-label{ display:none; color:var(--muted); font-size:12px; margin-right:6px; }
 .back-top{
@@ -172,9 +184,13 @@ body.view-cards .cards-view{ display:block; }
     border-top:1px solid var(--line);
     padding-top:8px;
     font-size:14px;
+    background:#0f1625;
+    padding:10px 12px;
+    border-radius:12px;
+    border:1px solid #263047;
   }
   .mobile-label{ display:inline; }
-  .price-ars{ font-size:20px; color:var(--green); }
+  .price-ars{ font-size:20px; color:var(--green); font-weight:bold; }
   .price-final{ font-size:16px; }
   .color-pill{ min-width:auto; font-size:11px; padding:3px 8px; }
   .series-title{ font-size:21px; }
@@ -395,14 +411,31 @@ function renderCards(equipos){
       card.innerHTML += `
       <div class="phone-row" data-search="${eq.search}">
         <div class="phone-main">
-          <div class="phone-name">${eq.modelo} <span class="color-pill ${claseColor(eq.color)}">${eq.color}</span></div>
-          <div class="phone-meta">${eq.gb} GB · Batería ${eq.bateria}%</div>
+          <div class="phone-name">
+            ${eq.modelo}
+            <span class="color-pill ${claseColor(eq.color)}">${eq.color}</span>
+          </div>
         </div>
-        <div class="mobile-line"><span class="mobile-label">GB</span>${eq.gb}</div>
-        <div class="mobile-line"><span class="mobile-label">Batería</span><span class="${eq.claseBateria}">${eq.bateria}%</span></div>
-        <div class="mobile-line baseUsdCol"><span class="mobile-label">Base</span>$${eq.precioUSD}</div>
-        <div class="mobile-line price-final"><span class="mobile-label">Final USD</span>$${eq.finalUSD}</div>
-        <div class="mobile-line price-ars"><span class="mobile-label">ARS</span>$${eq.precioARS.toLocaleString()}</div>
+
+        <div class="mobile-line">
+          <span class="mobile-label">GB</span>
+          <span class="badge">${eq.gb}</span>
+        </div>
+
+        <div class="mobile-line ${eq.claseBateria}">
+          <span class="mobile-label">Bat</span>
+          ${eq.bateria}%
+        </div>
+
+        <div class="mobile-line baseUsdCol">
+          <span class="mobile-label">USD</span>
+          $${eq.finalUSD}
+        </div>
+
+        <div class="mobile-line price-ars">
+          <span class="mobile-label">ARS</span>
+          $${eq.precioARS.toLocaleString()}
+        </div>
       </div>`;
     });
     cardsView.appendChild(card);
