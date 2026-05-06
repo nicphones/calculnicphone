@@ -122,9 +122,11 @@ async function guardarYCalcular(){
   try{
     status.textContent = "Guardando...";
 
-    await fetch(`${WEBHOOK_URL}?dolar=${encodeURIComponent(dolarInput.value)}
-    &ganancia=${encodeURIComponent(gananciaInput.value)}`);
+    const res = await fetch(`${WEBHOOK_URL}?dolar=${encodeURIComponent(dolarInput.value)}&ganancia=${encodeURIComponent(gananciaInput.value)}`);
     
+    const text = await res.text();
+    console.log(text);
+
     localStorage.setItem("dolar", dolarInput.value);
     localStorage.setItem("ganancia", gananciaInput.value);
 
@@ -133,6 +135,7 @@ async function guardarYCalcular(){
     cargar();
 
   }catch(e){
+    console.log(e);
     status.textContent = "Error al guardar";
   }
 }
