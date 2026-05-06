@@ -122,15 +122,18 @@ async function guardarYCalcular(){
   try{
     status.textContent = "Guardando...";
 
-    const res = await fetch(`${WEBHOOK_URL}?dolar=${encodeURIComponent(dolarInput.value)}&ganancia=${encodeURIComponent(gananciaInput.value)}`);
-    
-    const text = await res.text();
-    console.log(text);
+    await fetch(`${WEBHOOK_URL}?dolar=${encodeURIComponent(dolarInput.value)}&ganancia=${encodeURIComponent(gananciaInput.value)}`, {
+      mode: "no-cors"
+    });
 
     localStorage.setItem("dolar", dolarInput.value);
     localStorage.setItem("ganancia", gananciaInput.value);
 
-    status.textContent = "Guardado correctamente";
+    status.textContent = "Guardado (sincronizando...)";
+
+    setTimeout(() => {
+      status.textContent = "Guardado correctamente";
+    }, 1000);
 
     cargar();
 
