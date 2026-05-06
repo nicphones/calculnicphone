@@ -35,7 +35,7 @@ th { background:#222; }
 
 <br>
 <label>Buscar: </label>
-<input type="text" id="busqueda" placeholder="Ej: iPhone 13 blue 128">
+<input type="text" id="busqueda" placeholder="Buscar">
 <button id="buscarBtn">Buscar</button>
 
 <div class="status" id="status">Esperando acción</div>
@@ -183,22 +183,36 @@ busquedaInput.addEventListener("keydown", function(e){
   if(e.key === "Enter") buscarFila();
 });
 
-async function cargarConfig(){
+async function guardarYCalcular(){
   try{
-    const res = await fetch(CONFIG_URL);
-    const text = await res.text();
-    const filas = text.split("\n").map(f => f.split(","));
+    status.textContent = "Guardando...";
 
-    filas.forEach(f => {
-      if(f[0] === "dolar") dolarInput.value = f[1];
-      if(f[0] === "ganancia") gananciaInput.value = f[1];
-    });
+    const url = `${WEBHOOK_URL}?dolar=${encodeURIComponent(dolarInput.value)}&ganancia=${encodeURIComponent(gananciaInput.value)}&t=${Date.now()}`;
+
+    const iframe = document.createElement("iframe");
+    iframe.style.display = "none";
+    iframe.src = url;
+    document.body.appendChild(iframe);
+
+    localStorage.setItem("dolar", dolarInput.value);
+    localStorage.setItem("ganancia", gananciaInput.value);
+
+    status.textContent = "Guardado enviado";
+
+    setTimeout(() => {
+      iframe.remove();
+      status.textContent = "Guardado correctamente";
+      cargar();
+    }, 1500);
 
   }catch(e){
-    console.log("Error config");
+    console.log(e);
+    status.textContent = "Error al guardar";
   }
 }
 
+btn.addEventListener("click", guardarYCalcular);  
+  
 (async () => {
   await cargarConfig();
   cargar();
