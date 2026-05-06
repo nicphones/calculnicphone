@@ -195,10 +195,56 @@ tr:hover td{ background:#1b202b; }
 }
 
 @media(max-width:700px){
-  .container{ padding:14px; }
+  .container{ padding:12px; }
   h2{ font-size:28px; }
+  .header{ align-items:flex-start; }
   .controls{ grid-template-columns:1fr; }
-  .color-pill{ min-width:120px; }
+  button{ width:100%; }
+  .table-wrap{ border:none; box-shadow:none; overflow:visible; }
+  table{ min-width:0; background:transparent; }
+  thead{ display:none; }
+  tbody{ display:block; }
+  tr{
+    display:block;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:18px;
+    margin-bottom:14px;
+    padding:12px;
+    box-shadow:0 8px 22px rgba(0,0,0,.22);
+  }
+  tr:hover td{ background:transparent; }
+  td{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    border:none;
+    border-bottom:1px solid var(--line);
+    padding:9px 4px;
+    text-align:right;
+    font-size:15px;
+  }
+  td:last-child{ border-bottom:none; }
+  td::before{
+    content:attr(data-label);
+    color:var(--muted);
+    font-size:13px;
+    text-align:left;
+    flex-shrink:0;
+  }
+  td[data-label="Modelo"]{
+    display:block;
+    text-align:left;
+    font-size:20px;
+    font-weight:bold;
+    border-bottom:1px solid var(--line);
+    padding-bottom:12px;
+  }
+  td[data-label="Modelo"]::before{ display:none; }
+  .color-pill{ min-width:145px; }
+  .price-final{ font-size:17px; }
+  .price-ars{ font-size:20px; color:var(--green); }
 }
 </style>
 </head>
@@ -357,13 +403,13 @@ async function cargar(){
 
       tbody.innerHTML += `
       <tr>
-        <td>${f[0]}</td>
-        <td>${f[1]}</td>
-        <td><span class="color-pill ${claseColor(color)}">${color}</span></td>
-        <td class="${claseBateria}">${bateria}%</td>
-        <td class="baseUsdCol">$${precioUSD}</td>
-        <td class="price-final">$${finalUSD}</td>
-        <td class="price-ars">$${precioARS.toLocaleString()}</td>
+        <td data-label="Modelo">${f[0]}</td>
+        <td data-label="GB">${f[1]}</td>
+        <td data-label="Color"><span class="color-pill ${claseColor(color)}">${color}</span></td>
+        <td data-label="Batería" class="${claseBateria}">${bateria}%</td>
+        <td data-label="Base USD" class="baseUsdCol">$${precioUSD}</td>
+        <td data-label="Final USD" class="price-final">$${finalUSD}</td>
+        <td data-label="Precio ARS" class="price-ars">$${precioARS.toLocaleString()}</td>
       </tr>`;
 
       cantidad++;
