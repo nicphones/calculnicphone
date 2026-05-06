@@ -152,10 +152,13 @@ async function cargarConfig(){
     const filas = text.split("\n").map(f => f.split(","));
 
     filas.forEach(f => {
-      if(f[0] === "dolar") dolarInput.value = f[1];
-      if(f[0] === "ganancia") gananciaInput.value = f[1];
+      const key = (f[0] || "").trim().toLowerCase();
+      const value = (f[1] || "").trim();
+    
+      if(key === "dolar") dolarInput.value = value;
+      if(key === "ganancia") gananciaInput.value = value;
     });
-
+    
   }catch(e){
     console.log("Error config");
   }
