@@ -125,33 +125,32 @@ async function cargar(){
   });
 }
 
-async function guardarYCalcular(){
+async function cargarConfig(){
   try{
-    status.textContent = "Guardando...";
+    const res = await fetch(CONFIG_URL + "&t=" + Date.now());
+    const text = await res.text();
+    const filas = text.split("\n").map(f => f.split(","));
 
-    const url = `${WEBHOOK_URL}?dolar=${encodeURIComponent(dolarInput.value)}&ganancia=${encodeURIComponent(gananciaInput.value)}&t=${Date.now()}`;
+    filas.forEach(f => {
+      const key = (f[0] || "")
+        .trim()
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
 
-    // Google Apps Script suele bloquear fetch por CORS.
-    // Con iframe se ejecuta el GET igual que cuando pegás el link en el navegador.
-    const iframe = document.createElement("iframe");
-    iframe.style.display = "none";
-    iframe.src = url;
-    document.body.appendChild(iframe);
+      const value = (f[1] || "").trim();
 
-    localStorage.setItem("dolar", dolarInput.value);
-    localStorage.setItem("ganancia", gananciaInput.value);
+      if(key === "dolar") dolarInput.value = value;
+      if(key === "ganancia") gananciaInput.value = value;
+    });
 
-    status.textContent = "Guardado enviado";
-
-    setTimeout(() => {
-      iframe.remove();
-      status.textContent = "Guardado correctamente";
-      cargar();
-    }, 1500);
+    if(!dolarInput.value) dolarInput.value = localStorage.getItem("dolar") || "";
+    if(!gananciaInput.value) gananciaInput.value = localStorage.getItem("ganancia") || "";
 
   }catch(e){
-    console.log(e);
-    status.textContent = "Error al guardar";
+    console.log("Error config", e);
+    dolarInput.value = localStorage.getItem("dolar") || "";
+    gananciaInput.value = localStorage.getItem("ganancia") || "";
   }
 }
 
