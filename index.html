@@ -64,12 +64,19 @@ gananciaInput.addEventListener("input", guardarYActualizar);
 
 function limpiarNumero(valor){
   if(!valor) return 0;
-  return parseFloat(valor.toString()
+
+  let v = valor.toString()
     .replace(/USD/gi, "")
     .replace(/\$/g, "")
-    .replace(/\./g, "")
-    .replace(/,/g, ".")
-    .trim()) || 0;
+    .trim();
+
+  // manejar formatos tipo 300,00 o 1.200,50
+  if(v.includes(",")){
+    v = v.replace(/\./g, ""); // quitar miles
+    v = v.replace(",", "."); // coma decimal -> punto
+  }
+
+  return Math.floor(parseFloat(v)) || 0;
 }
 
 async function cargar(){
