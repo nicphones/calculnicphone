@@ -33,6 +33,11 @@ th { background:#222; }
 
 <button id="calcularBtn">Calcular</button>
 
+<br>
+<label>Buscar: </label>
+<input type="text" id="busqueda" placeholder="Ej: iPhone 13 blue 128">
+<button id="buscarBtn">Buscar</button>
+
 <div class="status" id="status">Esperando acción</div>
 
 <table>
@@ -55,12 +60,14 @@ th { background:#222; }
 
 const CSV_URL = "https://docs.google.com/spreadsheets/d/1khFdbRuruEomajgpWX8TQ3G30A2i0-BGKo7Zlw-THA8/export?format=csv&gid=0";
 const CONFIG_URL = "https://docs.google.com/spreadsheets/d/1WDvG9oA0WTwzwBdeSMAt1kTvWn3UQUYkAXbA6jutvDE/export?format=csv&gid=0";
-const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbygia2T_Hbh9H9AkCK_IEykgwSSxBoGysdj-y6BsDHaT2PKYu5iBRx14Ea1ign8MU23/exec";
-  
+const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbzck4ZE95joCk0KsnLvd4Hz8yCCL97O09OKFCs6f3PYjnbtcR3gEkQhFLeNOD5J1Rhi/exec";
+
 const dolarInput = document.getElementById("dolar");
 const gananciaInput = document.getElementById("ganancia");
 const status = document.getElementById("status");
 const btn = document.getElementById("calcularBtn");
+const busquedaInput = document.getElementById("busqueda");
+const buscarBtn = document.getElementById("buscarBtn");
 
 function limpiarNumero(valor){
   if(!valor) return 0;
@@ -124,8 +131,12 @@ async function guardarYCalcular(){
 
     const url = `${WEBHOOK_URL}?dolar=${encodeURIComponent(dolarInput.value)}&ganancia=${encodeURIComponent(gananciaInput.value)}&t=${Date.now()}`;
 
-    const img = new Image();
-    img.src = url;
+    // Google Apps Script suele bloquear fetch por CORS.
+    // Con iframe se ejecuta el GET igual que cuando pegás el link en el navegador.
+    const iframe = document.createElement("iframe");
+    iframe.style.display = "none";
+    iframe.src = url;
+    document.body.appendChild(iframe);
 
     localStorage.setItem("dolar", dolarInput.value);
     localStorage.setItem("ganancia", gananciaInput.value);
@@ -133,6 +144,7 @@ async function guardarYCalcular(){
     status.textContent = "Guardado enviado";
 
     setTimeout(() => {
+      iframe.remove();
       status.textContent = "Guardado correctamente";
       cargar();
     }, 1500);
@@ -145,6 +157,33 @@ async function guardarYCalcular(){
 
 btn.addEventListener("click", guardarYCalcular);
 
+function buscarFila(){
+  const texto = busquedaInput.value.trim().toLowerCase();
+  if(!texto) return;
+
+  const filas = document.querySelectorAll("#tabla tr");
+
+  filas.forEach(fila => fila.style.outline = "none");
+
+  for(const fila of filas){
+    const contenido = fila.textContent.toLowerCase();
+
+    if(contenido.includes(texto)){
+      fila.scrollIntoView({ behavior: "smooth", block: "center" });
+      fila.style.outline = "3px solid #00ff88";
+      return;
+    }
+  }
+
+  status.textContent = "No se encontró ningún resultado";
+}
+
+buscarBtn.addEventListener("click", buscarFila);
+
+busquedaInput.addEventListener("keydown", function(e){
+  if(e.key === "Enter") buscarFila();
+});
+
 async function cargarConfig(){
   try{
     const res = await fetch(CONFIG_URL);
@@ -152,13 +191,10 @@ async function cargarConfig(){
     const filas = text.split("\n").map(f => f.split(","));
 
     filas.forEach(f => {
-      const key = (f[0] || "").trim().toLowerCase();
-      const value = (f[1] || "").trim();
-    
-      if(key === "dolar") dolarInput.value = value;
-      if(key === "ganancia") gananciaInput.value = value;
+      if(f[0] === "dolar") dolarInput.value = f[1];
+      if(f[0] === "ganancia") gananciaInput.value = f[1];
     });
-    
+
   }catch(e){
     console.log("Error config");
   }
