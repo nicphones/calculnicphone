@@ -73,19 +73,23 @@ async function cargar(){
   const ganancia = parseFloat(gananciaInput.value) || 0;
 
   data.forEach(item => {
-    if(!item.Modelo) return;
+    // algunas sheets usan mayúsculas/minúsculas distintas
+    const modelo = item.Modelo || item.MODELO || item.modelo;
+    if(!modelo) return;
 
-    let precioUSD = parseFloat(item["Precio lista"].replace("USD", "")) || 0;
+    // detectar posibles nombres de columnas (por si cambian)
+    const precioRaw = item["Precio lista"] || item["Precio"] || item["Precio USD"] || "0";
+    let precioUSD = parseFloat(precioRaw.toString().replace("USD", "").replace(/,/g, "").trim()) || 0;
     let precioARS = (precioUSD + ganancia) * dolar;
 
-    let bateria = parseInt(item["Batería"]) || 0;
+    let bateria = parseInt(item["Batería"] || item["Bateria"] || item["battery"] || 0);
     let clase = bateria > 85 ? "green" : bateria >= 80 ? "yellow" : "red";
 
     tbody.innerHTML += `
     <tr>
-      <td>${item.Modelo}</td>
-      <td>${item.GB}</td>
-      <td>${item.Color}</td>
+      <td>${modelo}</td>
+      <td>${item.GB || item.gb || ""}</td>
+      <td>${item.Color || item.color || ""}</td>
       <td class="${clase}">${bateria}%</td>
       <td>$${precioUSD}</td>
       <td>$${precioARS.toLocaleString()}</td>
