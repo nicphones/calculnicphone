@@ -122,15 +122,9 @@ async function guardarYCalcular(){
   try{
     status.textContent = "Guardando...";
 
-    await fetch(WEBHOOK_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        dolar: dolarInput.value,
-        ganancia: gananciaInput.value
-      })
-    });
-
+    await fetch(`${WEBHOOK_URL}?dolar=${encodeURIComponent(dolarInput.value)}
+    &ganancia=${encodeURIComponent(gananciaInput.value)}`);
+    
     localStorage.setItem("dolar", dolarInput.value);
     localStorage.setItem("ganancia", gananciaInput.value);
 
