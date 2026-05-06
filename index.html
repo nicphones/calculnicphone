@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Calculadora iPhone</title>
+<title>Nic Phone</title>
 
 <style>
 body { font-family: Arial; background:#111; color:#eee; }
@@ -47,7 +47,7 @@ th { background:#222; }
 <th>GB</th>
 <th>Color</th>
 <th>Batería</th>
-<th>Base USD</th>
+<th class="baseUsdCol">Base USD</th>
 <th>Final USD</th>
 <th>Precio ARS</th>
 </tr>
@@ -88,6 +88,7 @@ function limpiarNumero(valor){
 }
 
 async function cargar(){
+  actualizarBaseUSD();
   const res = await fetch(CSV_URL);
   const text = await res.text();
 
@@ -118,7 +119,7 @@ async function cargar(){
       <td>${f[1]}</td>
       <td>${f[2]}</td>
       <td class="${clase}">${bateria}%</td>
-      <td>$${precioUSD}</td>
+      <td class="baseUsdCol">$${precioUSD}</td>
       <td>$${finalUSD}</td>
       <td>$${precioARS.toLocaleString()}</td>
     </tr>`;
@@ -212,6 +213,35 @@ async function guardarYCalcular(){
 }
 
 btn.addEventListener("click", guardarYCalcular);  
+
+const toggleBaseBtn = document.getElementById("toggleBaseBtn");
+
+let baseVisible = localStorage.getItem("baseVisible");
+
+if(baseVisible === null){
+  baseVisible = "true";
+}
+
+function actualizarBaseUSD(){
+  const columnas = document.querySelectorAll(".baseUsdCol");
+
+  columnas.forEach(col => {
+    col.style.display = baseVisible === "true" ? "" : "none";
+  });
+
+  toggleBaseBtn.textContent =
+    baseVisible === "true"
+      ? "Ocultar Base USD"
+      : "Mostrar Base USD";
+}
+
+toggleBaseBtn.addEventListener("click", () => {
+  baseVisible = baseVisible === "true" ? "false" : "true";
+
+  localStorage.setItem("baseVisible", baseVisible);
+
+  actualizarBaseUSD();
+});  
   
 (async () => {
   await cargarConfig();
