@@ -124,10 +124,8 @@ async function guardarYCalcular(){
 
     const url = `${WEBHOOK_URL}?dolar=${encodeURIComponent(dolarInput.value)}&ganancia=${encodeURIComponent(gananciaInput.value)}&t=${Date.now()}`;
 
-    const iframe = document.createElement("iframe");
-    iframe.style.display = "none";
-    iframe.src = url;
-    document.body.appendChild(iframe);
+    const img = new Image();
+    img.src = url;
 
     localStorage.setItem("dolar", dolarInput.value);
     localStorage.setItem("ganancia", gananciaInput.value);
@@ -135,7 +133,6 @@ async function guardarYCalcular(){
     status.textContent = "Guardado enviado";
 
     setTimeout(() => {
-      iframe.remove();
       status.textContent = "Guardado correctamente";
       cargar();
     }, 1500);
