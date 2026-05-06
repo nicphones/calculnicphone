@@ -21,10 +21,10 @@ th { background:#222; }
 <h2>Calculadora de Precios</h2>
 
 <label>Dólar: </label>
-<input type="number" id="dolar">
+<input type="number" id="dolar" step="0.01">
 
 <label>Ganancia (USD): </label>
-<input type="number" id="ganancia">
+<input type="number" id="ganancia" step="0.01">
 
 <table>
 <thead>
@@ -33,7 +33,8 @@ th { background:#222; }
 <th>GB</th>
 <th>Color</th>
 <th>Batería</th>
-<th>Precio USD</th>
+<th>Base USD</th>
+<th>Final USD</th>
 <th>Precio ARS</th>
 </tr>
 </thead>
@@ -47,20 +48,29 @@ const CSV_URL = "https://docs.google.com/spreadsheets/d/1khFdbRuruEomajgpWX8TQ3G
 const dolarInput = document.getElementById("dolar");
 const gananciaInput = document.getElementById("ganancia");
 
-// guardar valores
+// cargar valores guardados
 
 dolarInput.value = localStorage.getItem("dolar") || "";
 gananciaInput.value = localStorage.getItem("ganancia") || "";
 
-dolarInput.addEventListener("input", () => {
+function guardarYActualizar(){
   localStorage.setItem("dolar", dolarInput.value);
-  cargar();
-});
-
-gananciaInput.addEventListener("input", () => {
   localStorage.setItem("ganancia", gananciaInput.value);
   cargar();
-});
+}
+
+dolarInput.addEventListener("input", guardarYActualizar);
+gananciaInput.addEventListener("input", guardarYActualizar);
+
+function limpiarNumero(valor){
+  if(!valor) return 0;
+  return parseFloat(valor.toString()
+    .replace(/USD/gi, "")
+    .replace(/\$/g, "")
+    .replace(/\./g, "")
+    .replace(/,/g, ".")
+    .trim()) || 0;
+}
 
 async function cargar(){
   const res = await fetch(CSV_URL);
@@ -68,10 +78,7 @@ async function cargar(){
 
   const filas = text.split("\n").map(f => f.split(","));
 
-  // fila donde están los headers reales (aprox fila 9)
   const headerIndex = filas.findIndex(f => f.includes("Modelo"));
-  const headers = filas[headerIndex];
-
   const data = filas.slice(headerIndex + 1);
 
   const tbody = document.getElementById("tabla");
@@ -87,9 +94,10 @@ async function cargar(){
     const gb = f[1];
     const color = f[2];
     const bateria = parseInt(f[3]) || 0;
-    const precioUSD = parseFloat((f[5] || "").replace("USD", "")) || 0;
 
-    const precioARS = (precioUSD + ganancia) * dolar;
+    const precioUSD = limpiarNumero(f[5]);
+    const finalUSD = precioUSD + ganancia;
+    const precioARS = finalUSD * dolar;
 
     const clase = bateria > 85 ? "green" : bateria >= 80 ? "yellow" : "red";
 
@@ -100,6 +108,7 @@ async function cargar(){
       <td>${color}</td>
       <td class="${clase}">${bateria}%</td>
       <td>$${precioUSD}</td>
+      <td>$${finalUSD}</td>
       <td>$${precioARS.toLocaleString()}</td>
     </tr>`;
   });
