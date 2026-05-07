@@ -75,7 +75,8 @@ h2{
   margin-bottom:6px;
 }
 
-input{
+input,
+select{
   width:100%;
   padding:12px;
   border-radius:12px;
@@ -86,7 +87,8 @@ input{
   font-size:15px;
 }
 
-input:focus{
+input:focus,
+select:focus{
   border-color:var(--green);
   box-shadow:0 0 0 3px rgba(0,255,136,.12);
 }
@@ -114,6 +116,20 @@ button.secondary{
 }
 
 button.secondary:hover{ background:#343c4d; }
+
+.filters-panel{
+  display:none;
+  grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+  gap:12px;
+  align-items:end;
+  margin-top:12px;
+  padding-top:12px;
+  border-top:1px solid var(--line);
+}
+
+.filters-panel.open{
+  display:grid;
+}
 
 .status{
   margin-top:12px;
@@ -218,7 +234,8 @@ body.hide-base-usd .baseUsdCol{
   h2{ font-size:27px; }
   .header{ align-items:flex-start; }
   .controls{ grid-template-columns:1fr; gap:10px; }
-  input{ padding:10px 11px; font-size:14px; }
+  input,
+  select{ padding:10px 11px; font-size:14px; }
   button{ width:100%; padding:10px 12px; }
   .panel{ padding:13px; border-radius:16px; margin-bottom:14px; }
 
@@ -396,6 +413,30 @@ body.hide-base-usd .baseUsdCol{
         <input type="text" id="busqueda" placeholder="Ej: 13 blue 128">
       </div>
       <button id="buscarBtn" class="secondary">Buscar</button>
+      <button id="toggleFiltrosBtn" class="secondary">Filtros</button>
+    </div>
+
+    <div class="filters-panel" id="filtrosPanel">
+      <div class="field">
+        <label>Color</label>
+        <select id="filtroColor">
+          <option value="">Todos</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Bateria</label>
+        <select id="filtroBateria">
+          <option value="">Todas</option>
+          <option value="80">Mayor a 80</option>
+          <option value="90">Mayor a 90</option>
+          <option value="95">Mayor a 95</option>
+          <option value="100">Solo 100</option>
+        </select>
+      </div>
+
+      <button id="aplicarFiltrosBtn">Aplicar filtros</button>
+      <button id="limpiarFiltrosBtn" class="secondary">Limpiar</button>
     </div>
 
     <div class="status" id="status">Esperando accion</div>
@@ -434,9 +475,16 @@ const busquedaInput = document.getElementById("busqueda");
 const buscarBtn = document.getElementById("buscarBtn");
 const toggleBaseBtn = document.getElementById("toggleBaseBtn");
 const backTopBtn = document.getElementById("backTopBtn");
+const toggleFiltrosBtn = document.getElementById("toggleFiltrosBtn");
+const filtrosPanel = document.getElementById("filtrosPanel");
+const filtroColor = document.getElementById("filtroColor");
+const filtroBateria = document.getElementById("filtroBateria");
+const aplicarFiltrosBtn = document.getElementById("aplicarFiltrosBtn");
+const limpiarFiltrosBtn = document.getElementById("limpiarFiltrosBtn");
 
 let baseVisible = localStorage.getItem("baseVisible");
 if(baseVisible === null) baseVisible = "true";
+let todosLosEquipos = [];
 
 function parseCSV(text){
   const rows = [];
@@ -580,6 +628,54 @@ function renderTabla(equipos){
   });
 }
 
+function poblarFiltroColor(equipos){
+  const colorActual = filtroColor.value;
+  const colores = [...new Set(
+    equipos
+      .map(eq => (eq.color || "").trim())
+      .filter(Boolean)
+  )].sort((a, b) => a.localeCompare(b));
+
+  filtroColor.innerHTML = '<option value="">Todos</option>';
+
+  colores.forEach(color => {
+    const option = document.createElement("option");
+    option.value = color;
+    option.textContent = color;
+    filtroColor.appendChild(option);
+  });
+
+  if(colores.includes(colorActual)){
+    filtroColor.value = colorActual;
+  }
+}
+
+function aplicarFiltros(){
+  const colorElegido = normalizarTexto(filtroColor.value);
+  const bateriaElegida = filtroBateria.value;
+
+  const filtrados = todosLosEquipos.filter(eq => {
+    const coincideColor = !colorElegido || normalizarTexto(eq.color) === colorElegido;
+
+    let coincideBateria = true;
+    if(bateriaElegida === "100"){
+      coincideBateria = eq.bateria === 100;
+    }else if(bateriaElegida){
+      coincideBateria = eq.bateria > parseInt(bateriaElegida);
+    }
+
+    return coincideColor && coincideBateria;
+  });
+
+  renderTabla(filtrados);
+  actualizarBaseUSD();
+
+  const hayFiltros = Boolean(colorElegido || bateriaElegida);
+  status.textContent = hayFiltros
+    ? `Filtrado: ${filtrados.length} de ${todosLosEquipos.length} equipos`
+    : `Stock cargado: ${todosLosEquipos.length} equipos`;
+}
+
 async function cargar(){
   try{
     status.textContent = "Cargando stock...";
@@ -636,9 +732,9 @@ async function cargar(){
       });
     });
 
-    renderTabla(equipos);
-    actualizarBaseUSD();
-    status.textContent = `Stock cargado: ${equipos.length} equipos`;
+    todosLosEquipos = equipos;
+    poblarFiltroColor(todosLosEquipos);
+    aplicarFiltros();
 
   }catch(e){
     console.log(e);
@@ -715,6 +811,18 @@ function buscarFila(){
 
 btn.addEventListener("click", guardarYCalcular);
 buscarBtn.addEventListener("click", buscarFila);
+
+toggleFiltrosBtn.addEventListener("click", () => {
+  filtrosPanel.classList.toggle("open");
+});
+
+aplicarFiltrosBtn.addEventListener("click", aplicarFiltros);
+
+limpiarFiltrosBtn.addEventListener("click", () => {
+  filtroColor.value = "";
+  filtroBateria.value = "";
+  aplicarFiltros();
+});
 
 busquedaInput.addEventListener("keydown", e => {
   if(e.key === "Enter") buscarFila();
