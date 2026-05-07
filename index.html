@@ -1,3 +1,53 @@
+    <div class="controls" style="margin-top:12px;">
+      <div class="field">
+        <label>Buscar equipo</label>
+        <input type="text" id="busqueda" placeholder="Ej: 13 blue 128">
+      </div>
+      <button id="buscarBtn" class="secondary">Buscar</button>
+    </div>
+
+    <div class="status" id="status">Esperando acciÃ³n</div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>MODELO</th>
+          <th>COLOR</th>
+          <th>GB</th>
+          <th>BATERIA</th>
+          <th class="baseUsdCol">BASE USD</th>
+          <th>USD FINAL</th>
+          <th>PESOS</th>
+        </tr>
+      </thead>
+      <tbody id="tabla"></tbody>
+    </table>
+  </div>
+</div>
+<button id="backTopBtn" class="back-top secondary">â†‘ Arriba</button>
+
+<script>
+const CSV_URL = "https://docs.google.com/spreadsheets/d/1khFdbRuruEomajgpWX8TQ3G30A2i0-BGKo7Zlw-THA8/export?format=csv&gid=0";
+const CONFIG_URL = "https://docs.google.com/spreadsheets/d/1WDvG9oA0WTwzwBdeSMAt1kTvWn3UQUYkAXbA6jutvDE/export?format=csv&gid=0";
+const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbygia2T_Hbh9H9AkCK_IEykgwSSxBoGysdj-y6BsDHaT2PKYu5iBRx14Ea1ign8MU23/exec";
+
+const dolarInput = document.getElementById("dolar");
+const gananciaInput = document.getElementById("ganancia");
+const status = document.getElementById("status");
+const btn = document.getElementById("calcularBtn");
+const busquedaInput = document.getElementById("busqueda");
+const buscarBtn = document.getElementById("buscarBtn");
+const toggleBaseBtn = document.getElementById("toggleBaseBtn");
+const backTopBtn = document.getElementById("backTopBtn");
+
+let baseVisible = localStorage.getItem("baseVisible");
+if(baseVisible === null) baseVisible = "true";
+
+function parseCSV(text){
+  const rows = [];
+  let row = [], cell = "", insideQuotes = false;
   for(let i = 0; i < text.length; i++){
     const char = text[i], next = text[i + 1];
     if(char === '"' && insideQuotes && next === '"'){ cell += '"'; i++; }
