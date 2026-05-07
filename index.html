@@ -119,16 +119,19 @@ tr:hover td{ background:#1b202b; }
 }
 
 @media(max-width:700px){
-  .container{ padding:8px; }
-  h2{ font-size:26px; }
+  .container{ padding:10px 8px; }
+  h2{ font-size:27px; }
   .header{ align-items:flex-start; }
-  .controls{ grid-template-columns:1fr; }
-  button{ width:100%; }
+  .controls{ grid-template-columns:1fr; gap:10px; }
+  input{ padding:10px 11px; font-size:14px; }
+  button{ width:100%; padding:10px 12px; }
+  .panel{ padding:13px; border-radius:16px; margin-bottom:14px; }
 
   .table-wrap{
     max-height:72vh;
     overflow:auto;
     border-radius:12px;
+    width:100%;
   }
 
   table{
@@ -143,12 +146,14 @@ tr:hover td{ background:#1b202b; }
 
   th,td{
     display:table-cell;
-    padding:5px 3px;
+    padding:6px 3px;
     font-size:10px;
-    line-height:1.15;
+    line-height:1.1;
     text-align:center;
-    white-space:normal;
-    word-break:break-word;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    vertical-align:middle;
   }
 
   th{
@@ -157,27 +162,50 @@ tr:hover td{ background:#1b202b; }
     z-index:60;
     font-size:9px;
     letter-spacing:0;
+    padding:7px 2px;
   }
 
   td::before{ display:none; }
 
-  th:nth-child(1), td:nth-child(1){ width:28%; text-align:left; }
-  th:nth-child(2), td:nth-child(2){ width:18%; }
-  th:nth-child(3), td:nth-child(3){ width:8%; }
-  th:nth-child(4), td:nth-child(4){ width:10%; }
-  th:nth-child(5), td:nth-child(5){ width:11%; }
+  /* Columnas con BASE USD visible */
+  th:nth-child(1), td:nth-child(1){ width:26%; text-align:left; padding-left:6px; }
+  th:nth-child(2), td:nth-child(2){ width:19%; }
+  th:nth-child(3), td:nth-child(3){ width:7%; }
+  th:nth-child(4), td:nth-child(4){ width:9%; }
+  th:nth-child(5), td:nth-child(5){ width:10%; }
   th:nth-child(6), td:nth-child(6){ width:11%; }
-  th:nth-child(7), td:nth-child(7){ width:14%; }
+  th:nth-child(7), td:nth-child(7){ width:18%; text-align:right; padding-right:6px; }
+
+  /* Cuando BASE USD está oculta, redistribuye mejor */
+  body.hide-base-usd th:nth-child(1),
+  body.hide-base-usd td:nth-child(1){ width:31%; }
+
+  body.hide-base-usd th:nth-child(2),
+  body.hide-base-usd td:nth-child(2){ width:22%; }
+
+  body.hide-base-usd th:nth-child(3),
+  body.hide-base-usd td:nth-child(3){ width:9%; }
+
+  body.hide-base-usd th:nth-child(4),
+  body.hide-base-usd td:nth-child(4){ width:10%; }
+
+  body.hide-base-usd th:nth-child(6),
+  body.hide-base-usd td:nth-child(6){ width:12%; }
+
+  body.hide-base-usd th:nth-child(7),
+  body.hide-base-usd td:nth-child(7){ width:16%; }
 
   td[data-label="LINEA"] strong{
     font-size:10px;
-    font-weight:bold;
+    font-weight:800;
+    letter-spacing:-.2px;
   }
 
   .group-row td{
-    font-size:13px;
-    padding:8px 10px;
+    font-size:14px;
+    padding:9px 8px;
     text-align:left;
+    white-space:nowrap;
   }
 
   .color-pill{
@@ -186,9 +214,10 @@ tr:hover td{ background:#1b202b; }
     max-width:100%;
     padding:3px 2px;
     font-size:8.5px;
-    line-height:1.1;
-    white-space:normal;
+    line-height:1;
+    white-space:nowrap;
     overflow:hidden;
+    text-overflow:ellipsis;
   }
 
   .badge{
@@ -200,11 +229,21 @@ tr:hover td{ background:#1b202b; }
   .final-usd,
   .price-ars{
     font-size:10px;
-    font-weight:bold;
+    font-weight:800;
   }
 
   .price-ars{
     color:var(--green);
+    font-size:10.5px;
+  }
+
+  .back-top{
+    right:12px;
+    bottom:12px;
+    width:auto;
+    padding:9px 12px;
+    font-size:13px;
+    opacity:.9;
   }
 }
 </style>
@@ -352,9 +391,18 @@ function buscarIndice(headers, opciones, fallback){
 }
 
 function actualizarBaseUSD(){
-  const columnas = document.querySelectorAll(".baseUsdCol");
-  columnas.forEach(col => { col.style.display = baseVisible === "true" ? "" : "none"; });
-  toggleBaseBtn.textContent = baseVisible === "true" ? "Ocultar Base USD" : "Mostrar Base USD";
+  const columnas = document.querySelectorAll(\".baseUsdCol\");
+  const ocultar = baseVisible !== \"true\";
+
+  columnas.forEach(col => {
+    col.style.display = ocultar ? \"none\" : \"\";
+  });
+
+  document.body.classList.toggle(\"hide-base-usd\", ocultar);
+
+  toggleBaseBtn.textContent = ocultar
+    ? \"Mostrar Base USD\"
+    : \"Ocultar Base USD\";
 }
 
 function renderTabla(equipos){
@@ -403,7 +451,8 @@ async function cargar(){
     const equipos = [];
 
     data.forEach(f => {
-      const modelo = f[idxModelo] || "";
+      let modelo = f[idxModelo] || \"\";
+      modelo = modelo.replace(/^iphone\s+/i, \"\");
       if(!modelo.trim()) return;
       const gb = f[idxGB] || "";
       const color = f[idxColor] || "";
