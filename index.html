@@ -27,7 +27,7 @@ body{
   color:var(--text);
 }
 
-.container{ max-width:1250px; margin:auto; padding:22px; }
+.container{ max-width:1300px; margin:auto; padding:22px; }
 .header{ display:flex; justify-content:space-between; align-items:center; gap:15px; margin-bottom:18px; }
 h2{ margin:0; font-size:34px; letter-spacing:.5px; }
 .subtitulo{ color:var(--muted); font-size:14px; margin-top:4px; }
@@ -66,7 +66,7 @@ button.secondary:hover{ background:#343c4d; }
   box-shadow:0 10px 30px rgba(0,0,0,.25);
   max-height:75vh;
 }
-table{ width:100%; border-collapse:separate; border-spacing:0; background:var(--card); min-width:850px; }
+table{ width:100%; border-collapse:separate; border-spacing:0; background:var(--card); min-width:950px; }
 th,td{ border-bottom:1px solid var(--line); padding:10px; text-align:center; }
 th{
   position:sticky;
@@ -81,6 +81,8 @@ th{
 }
 tr:hover td{ background:#1b202b; }
 .group-row td{ background:#101722 !important; color:var(--green); font-weight:bold; text-align:left; font-size:18px; padding:13px 16px; border-top:2px solid var(--line); }
+.base-price{ color:var(--muted); }
+.final-usd{ color:var(--green); font-weight:bold; }
 .price-ars{ font-weight:bold; font-size:16px; color:var(--green); }
 .green{ color:var(--green); font-weight:bold; }
 .yellow{ color:var(--yellow); font-weight:bold; }
@@ -129,7 +131,7 @@ tr:hover td{ background:#1b202b; }
   }
 
   table{
-    min-width:720px;
+    min-width:850px;
   }
 
   th,td{
@@ -184,7 +186,7 @@ tr:hover td{ background:#1b202b; }
       </div>
 
       <button id="calcularBtn">Calcular</button>
-      <button id="toggleBaseBtn" class="secondary">Ocultar USD</button>
+      <button id="toggleBaseBtn" class="secondary">Ocultar Base USD</button>
     </div>
 
     <div class="controls" style="margin-top:12px;">
@@ -206,7 +208,8 @@ tr:hover td{ background:#1b202b; }
           <th>COLOR</th>
           <th>GB</th>
           <th>BATERIA</th>
-          <th class="baseUsdCol">USD</th>
+          <th class="baseUsdCol">BASE USD</th>
+          <th>USD FINAL</th>
           <th>PESOS</th>
         </tr>
       </thead>
@@ -304,7 +307,7 @@ function buscarIndice(headers, opciones, fallback){
 function actualizarBaseUSD(){
   const columnas = document.querySelectorAll(".baseUsdCol");
   columnas.forEach(col => { col.style.display = baseVisible === "true" ? "" : "none"; });
-  toggleBaseBtn.textContent = baseVisible === "true" ? "Ocultar USD" : "Mostrar USD";
+  toggleBaseBtn.textContent = baseVisible === "true" ? "Ocultar Base USD" : "Mostrar Base USD";
 }
 
 function renderTabla(equipos){
@@ -314,7 +317,7 @@ function renderTabla(equipos){
 
   equipos.forEach(eq => {
     if(eq.grupo !== grupoActual){
-      tbody.innerHTML += `<tr class="group-row"><td colspan="6">${eq.grupo}</td></tr>`;
+      tbody.innerHTML += `<tr class="group-row"><td colspan="7">${eq.grupo}</td></tr>`;
       grupoActual = eq.grupo;
     }
 
@@ -324,7 +327,8 @@ function renderTabla(equipos){
         <td data-label="COLOR"><span class="color-pill ${claseColor(eq.color)}">${eq.color}</span></td>
         <td data-label="GB"><span class="badge">${eq.gb}</span></td>
         <td data-label="BATERIA" class="${eq.claseBateria}">${eq.bateria}%</td>
-        <td data-label="USD" class="baseUsdCol">$${eq.finalUSD}</td>
+        <td data-label="BASE USD" class="baseUsdCol base-price">$${eq.precioUSD}</td>
+        <td data-label="USD FINAL" class="final-usd">$${eq.finalUSD}</td>
         <td data-label="PESOS" class="price-ars">$${eq.precioARS.toLocaleString()}</td>
       </tr>`;
   });
