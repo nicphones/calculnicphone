@@ -126,38 +126,123 @@ tr:hover td{ background:#1b202b; }
   button{ width:100%; }
 
   .table-wrap{
-    max-height:72vh;
-    border-radius:14px;
+    max-height:none;
+    overflow:visible;
+    border:none;
+    box-shadow:none;
+    border-radius:0;
   }
 
   table{
-    min-width:850px;
+    min-width:0;
+    width:100%;
+    background:transparent;
   }
 
-  th,td{
-    padding:8px 7px;
+  thead{ display:none; }
+  tbody{ display:block; width:100%; }
+
+  tr{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:16px;
+    margin-bottom:12px;
+    padding:10px;
+    box-shadow:0 8px 22px rgba(0,0,0,.22);
+  }
+
+  tr:hover td{ background:transparent; }
+
+  td{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:8px;
+    border:none;
+    background:#0f1625;
+    border:1px solid #263047;
+    border-radius:12px;
+    padding:8px 9px;
+    text-align:right;
     font-size:13px;
+    min-width:0;
   }
 
-  th{
-    top:0;
-    z-index:60;
-    font-size:12px;
+  td::before{
+    content:attr(data-label);
+    color:var(--muted);
+    font-size:11px;
+    text-align:left;
+    flex-shrink:0;
+    font-weight:bold;
+  }
+
+  td[data-label="LINEA"]{
+    grid-column:1 / -1;
+    display:block;
+    text-align:left;
+    font-size:16px;
+    font-weight:bold;
+    background:#101722;
+    padding:10px 11px;
+  }
+
+  td[data-label="LINEA"]::before{ display:none; }
+
+  td[data-label="COLOR"]{
+    grid-column:1 / -1;
+    justify-content:center;
+  }
+
+  td[data-label="PESOS"]{
+    grid-column:1 / -1;
+    font-size:19px;
+    padding:11px;
+    justify-content:space-between;
+    color:var(--green);
+  }
+
+  .baseUsdCol[style*="display: none"]{
+    display:none !important;
+  }
+
+  .group-row{
+    display:block;
+    background:transparent;
+    border:none;
+    box-shadow:none;
+    padding:0;
+    margin:20px 0 10px;
   }
 
   .group-row td{
-    font-size:16px;
-    padding:10px 12px;
+    display:block;
+    background:#101722 !important;
+    border:1px solid var(--line);
+    border-radius:14px;
+    color:var(--green);
+    font-size:20px;
+    text-align:left;
+    padding:12px 14px;
   }
 
+  .group-row td::before{ display:none; }
+
   .color-pill{
-    min-width:92px;
+    min-width:120px;
     font-size:11px;
-    padding:3px 8px;
+    padding:4px 9px;
+  }
+
+  .badge{
+    font-size:12px;
   }
 
   .price-ars{
-    font-size:15px;
+    font-size:19px;
   }
 }
 </style>
