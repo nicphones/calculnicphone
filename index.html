@@ -118,6 +118,10 @@ tr:hover td{ background:#1b202b; }
   box-shadow:0 8px 24px rgba(0,0,0,.35);
 }
 
+body.hide-base-usd .baseUsdCol{
+  display:none !important;
+}
+
 @media(max-width:700px){
   .container{ padding:10px 8px; }
   h2{ font-size:27px; }
@@ -178,10 +182,10 @@ tr:hover td{ background:#1b202b; }
 
   /* Cuando BASE USD está oculta, redistribuye mejor */
   body.hide-base-usd th:nth-child(1),
-  body.hide-base-usd td:nth-child(1){ width:31%; }
+  body.hide-base-usd td:nth-child(1){ width:32%; }
 
   body.hide-base-usd th:nth-child(2),
-  body.hide-base-usd td:nth-child(2){ width:22%; }
+  body.hide-base-usd td:nth-child(2){ width:23%; }
 
   body.hide-base-usd th:nth-child(3),
   body.hide-base-usd td:nth-child(3){ width:9%; }
@@ -193,7 +197,7 @@ tr:hover td{ background:#1b202b; }
   body.hide-base-usd td:nth-child(6){ width:12%; }
 
   body.hide-base-usd th:nth-child(7),
-  body.hide-base-usd td:nth-child(7){ width:16%; }
+  body.hide-base-usd td:nth-child(7){ width:14%; }
 
   td[data-label="LINEA"] strong{
     font-size:10px;
@@ -338,7 +342,11 @@ function parseCSV(text){
 }
 
 function normalizarTexto(texto){
-  return (texto || "").toString().trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  return (texto || "").toString().trim().toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+}
+
+function modeloCorto(modelo){
+  return (modelo || "").toString().replace(/^iphone\s+/i, "").trim();
 }
 
 function limpiarNumero(valor){
@@ -391,18 +399,14 @@ function buscarIndice(headers, opciones, fallback){
 }
 
 function actualizarBaseUSD(){
-  const columnas = document.querySelectorAll(\".baseUsdCol\");
-  const ocultar = baseVisible !== \"true\";
+  const ocultar = baseVisible !== "true";
 
-  columnas.forEach(col => {
-    col.style.display = ocultar ? \"none\" : \"\";
+  document.querySelectorAll(".baseUsdCol").forEach(col => {
+    col.style.display = ocultar ? "none" : "";
   });
 
-  document.body.classList.toggle(\"hide-base-usd\", ocultar);
-
-  toggleBaseBtn.textContent = ocultar
-    ? \"Mostrar Base USD\"
-    : \"Ocultar Base USD\";
+  document.body.classList.toggle("hide-base-usd", ocultar);
+  toggleBaseBtn.textContent = ocultar ? "Mostrar Base USD" : "Ocultar Base USD";
 }
 
 function renderTabla(equipos){
@@ -418,7 +422,7 @@ function renderTabla(equipos){
 
     tbody.innerHTML += `
       <tr data-search="${eq.search}">
-        <td data-label="LINEA"><strong>${eq.modelo}</strong></td>
+        <td data-label="LINEA"><strong>${modeloCorto(eq.modelo)}</strong></td>
         <td data-label="COLOR"><span class="color-pill ${claseColor(eq.color)}">${eq.color}</span></td>
         <td data-label="GB"><span class="badge">${eq.gb}</span></td>
         <td data-label="BATERIA" class="${eq.claseBateria}">${eq.bateria}%</td>
