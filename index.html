@@ -455,8 +455,8 @@ async function cargar(){
     const equipos = [];
 
     data.forEach(f => {
-      let modelo = f[idxModelo] || \"\";
-      modelo = modelo.replace(/^iphone\s+/i, \"\");
+      const modeloOriginal = f[idxModelo] || "";
+      let modelo = modeloOriginal.replace(/^iphone\s+/i, "");
       if(!modelo.trim()) return;
       const gb = f[idxGB] || "";
       const color = f[idxColor] || "";
@@ -465,7 +465,7 @@ async function cargar(){
       const finalUSD = precioUSD + ganancia;
       const precioARS = finalUSD * dolar;
       const claseBateria = bateria > 85 ? "green" : bateria >= 80 ? "yellow" : "red";
-      const grupo = grupoModelo(modelo);
+      const grupo = grupoModelo(modeloOriginal);
       equipos.push({ modelo, gb, color, bateria, precioUSD, finalUSD, precioARS, claseBateria, grupo, search: normalizarTexto(`${modelo} ${gb} ${color} ${bateria} ${precioUSD} ${finalUSD} ${precioARS}`) });
     });
 
