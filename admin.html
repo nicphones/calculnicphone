@@ -205,6 +205,7 @@ body.hide-base-usd .baseUsdCol{ display:none !important; }
         <label>Ganancia (USD)</label>
         <input type="number" id="ganancia" placeholder="Ej: 40">
       </div>
+      <button id="calcularBtn">Calcular</button>
       <button id="guardarBtn">Guardar</button>
       <button id="toggleBaseBtn" class="secondary">Ocultar Base USD</button>
     </div>
@@ -265,6 +266,7 @@ const CLIENT_URL = "https://alenicolau21-dotcom.github.io/calculnicphone/";
 const shareBtn = document.getElementById("shareBtn");
 const dolarInput = document.getElementById("dolar");
 const gananciaInput = document.getElementById("ganancia");
+const calcularBtn = document.getElementById("calcularBtn");
 const guardarBtn = document.getElementById("guardarBtn");
 const status = document.getElementById("status");
 const busquedaInput = document.getElementById("busqueda");
@@ -419,6 +421,11 @@ function recalcularLocal(){
   aplicarFiltros();
 }
 
+function calcularManual(){
+  recalcularLocal();
+  status.textContent = "Calculo actualizado";
+}
+
 async function cargarAdmin(){
   try{
     status.textContent = "Cargando panel...";
@@ -464,23 +471,35 @@ async function guardarSinMensaje(){
 
 async function compartirCliente(){
   try{
-    status.textContent = "Guardando antes de compartir...";
+    status.textContent = "Cargando ultimas modificaciones antes de compartir";
     await guardarSinMensaje();
 
-    if(navigator.share){
-      await navigator.share({
-        title:"NicPhones",
-        text:"Lista actualizada de equipos disponibles",
-        url:CLIENT_URL
-      });
-      status.textContent = "Link compartido con precios actualizados";
-    }else{
-      await navigator.clipboard.writeText(CLIENT_URL);
-      status.textContent = "Link copiado con precios actualizados";
-    }
+    await copiarLinkCliente();
+    status.textContent = "Link copiado con precios actualizados";
   }catch(e){
     console.log(e);
     status.textContent = "Error al compartir: " + e.message;
+  }
+}
+
+async function copiarLinkCliente(){
+  try{
+    await navigator.clipboard.writeText(CLIENT_URL);
+    return;
+  }catch(e){}
+
+  const input = document.createElement("input");
+  input.value = CLIENT_URL;
+  input.style.position = "fixed";
+  input.style.left = "-9999px";
+  document.body.appendChild(input);
+  input.focus();
+  input.select();
+  const copiado = document.execCommand("copy");
+  input.remove();
+
+  if(!copiado){
+    throw new Error("No se pudo copiar el link");
   }
 }
 
@@ -502,8 +521,7 @@ function buscarFila(){
 guardarBtn.addEventListener("click",guardarConfig);
 shareBtn.addEventListener("click",compartirCliente);
 buscarBtn.addEventListener("click",buscarFila);
-dolarInput.addEventListener("input",recalcularLocal);
-gananciaInput.addEventListener("input",recalcularLocal);
+calcularBtn.addEventListener("click",calcularManual);
 toggleFiltrosBtn.addEventListener("click",() => filtrosPanel.classList.toggle("open"));
 aplicarFiltrosBtn.addEventListener("click",aplicarFiltros);
 limpiarFiltrosBtn.addEventListener("click",() => {
