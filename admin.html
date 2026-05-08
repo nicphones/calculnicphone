@@ -193,7 +193,6 @@ body.hide-base-usd .baseUsdCol{ display:none !important; }
 
   <div class="panel">
     <div class="controls">
-      <button id="loginBtn">Cargar panel</button>
       <button id="shareBtn" class="secondary">Compartir cliente</button>
     </div>
 
@@ -238,7 +237,7 @@ body.hide-base-usd .baseUsdCol{ display:none !important; }
       <button id="limpiarFiltrosBtn" class="secondary">Limpiar</button>
     </div>
 
-    <div class="status" id="status">Cargar panel para ver stock</div>
+    <div class="status" id="status">Cargando panel...</div>
   </div>
 
   <div class="table-wrap">
@@ -263,7 +262,6 @@ body.hide-base-usd .baseUsdCol{ display:none !important; }
 const API_URL = "https://script.google.com/macros/s/AKfycbyyg8E-9icCd3YQH7Rgrxk1q2lxXPPmvtRuFCFoz7qYhRRKhIr52bLni3J3OPtj8k1yUw/exec";
 const CLIENT_URL = "https://alenicolau21-dotcom.github.io/calculnicphone/";
 
-const loginBtn = document.getElementById("loginBtn");
 const shareBtn = document.getElementById("shareBtn");
 const dolarInput = document.getElementById("dolar");
 const gananciaInput = document.getElementById("ganancia");
@@ -454,16 +452,35 @@ async function guardarConfig(){
   }
 }
 
+async function guardarSinMensaje(){
+  recalcularLocal();
+  const data = await jsonp({
+    mode:"save",
+    dolar:dolarInput.value,
+    ganancia:gananciaInput.value
+  });
+  if(!data.ok) throw new Error(data.error || "No se pudo guardar");
+}
+
 async function compartirCliente(){
-  if(navigator.share){
-    await navigator.share({
-      title:"NicPhones",
-      text:"Lista actualizada de equipos disponibles",
-      url:CLIENT_URL
-    });
-  }else{
-    await navigator.clipboard.writeText(CLIENT_URL);
-    status.textContent = "Link de cliente copiado";
+  try{
+    status.textContent = "Guardando antes de compartir...";
+    await guardarSinMensaje();
+
+    if(navigator.share){
+      await navigator.share({
+        title:"NicPhones",
+        text:"Lista actualizada de equipos disponibles",
+        url:CLIENT_URL
+      });
+      status.textContent = "Link compartido con precios actualizados";
+    }else{
+      await navigator.clipboard.writeText(CLIENT_URL);
+      status.textContent = "Link copiado con precios actualizados";
+    }
+  }catch(e){
+    console.log(e);
+    status.textContent = "Error al compartir: " + e.message;
   }
 }
 
@@ -482,7 +499,6 @@ function buscarFila(){
   status.textContent = "No se encontro ningun resultado";
 }
 
-loginBtn.addEventListener("click",cargarAdmin);
 guardarBtn.addEventListener("click",guardarConfig);
 shareBtn.addEventListener("click",compartirCliente);
 buscarBtn.addEventListener("click",buscarFila);
@@ -502,6 +518,7 @@ toggleBaseBtn.addEventListener("click",() => {
 });
 busquedaInput.addEventListener("keydown",e => { if(e.key === "Enter") buscarFila(); });
 actualizarBaseUSD();
+cargarAdmin();
 </script>
 </body>
 </html>
