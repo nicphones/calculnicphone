@@ -206,7 +206,7 @@ body.hide-base-usd .baseUsdCol{ display:none !important; }
         <label>Ganancia (USD)</label>
         <input type="number" id="ganancia" placeholder="Ej: 40">
       </div>
-      <button id="guardarBtn">Guardar y recalcular</button>
+      <button id="guardarBtn">Guardar</button>
       <button id="toggleBaseBtn" class="secondary">Ocultar Base USD</button>
     </div>
 
@@ -393,6 +393,34 @@ function aplicarFiltros(){
     : `Stock cargado: ${todosLosEquipos.length} equipos`;
 }
 
+function recalcularLocal(){
+  const dolar = parseFloat(dolarInput.value) || 0;
+  const ganancia = parseFloat(gananciaInput.value) || 0;
+
+  todosLosEquipos = todosLosEquipos.map(eq => {
+    const precioUSD = parseFloat(eq.precioUSD) || 0;
+    const usdFinal = precioUSD + ganancia;
+    const pesos = Math.round(usdFinal * dolar);
+
+    return {
+      ...eq,
+      usdFinal,
+      pesos,
+      search: normalizarTexto([
+        eq.modelo,
+        modeloCorto(eq.modelo),
+        eq.gb,
+        eq.color,
+        eq.bateria,
+        usdFinal,
+        pesos
+      ].join(" "))
+    };
+  });
+
+  aplicarFiltros();
+}
+
 async function cargarAdmin(){
   try{
     status.textContent = "Cargando panel...";
@@ -411,6 +439,7 @@ async function cargarAdmin(){
 
 async function guardarConfig(){
   try{
+    recalcularLocal();
     status.textContent = "Guardando...";
     const data = await jsonp({
       mode:"save",
@@ -419,7 +448,6 @@ async function guardarConfig(){
     });
     if(!data.ok) throw new Error(data.error || "No se pudo guardar");
     status.textContent = "Guardado correctamente";
-    await cargarAdmin();
   }catch(e){
     console.log(e);
     status.textContent = "Error al guardar: " + e.message;
@@ -458,6 +486,8 @@ loginBtn.addEventListener("click",cargarAdmin);
 guardarBtn.addEventListener("click",guardarConfig);
 shareBtn.addEventListener("click",compartirCliente);
 buscarBtn.addEventListener("click",buscarFila);
+dolarInput.addEventListener("input",recalcularLocal);
+gananciaInput.addEventListener("input",recalcularLocal);
 toggleFiltrosBtn.addEventListener("click",() => filtrosPanel.classList.toggle("open"));
 aplicarFiltrosBtn.addEventListener("click",aplicarFiltros);
 limpiarFiltrosBtn.addEventListener("click",() => {
