@@ -1,27 +1,291 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NicPhones Admin</title>
+<style>
+:root{
+  --card:#171a21;
+  --line:#2b3140;
+  --text:#f2f4f8;
+  --muted:#9ca3af;
+  --green:#00ff88;
+  --yellow:#ffd000;
+  --red:#ff4d4d;
+}
+*{ box-sizing:border-box; }
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:linear-gradient(135deg,#0b0d12,#151924);
+  color:var(--text);
+}
+.container{ max-width:1300px; margin:auto; padding:22px; }
+.header{ display:flex; justify-content:space-between; align-items:center; gap:15px; margin-bottom:18px; }
+h2{ margin:0; font-size:34px; letter-spacing:.5px; }
+.subtitulo{ color:var(--muted); font-size:14px; margin-top:4px; }
+.panel{
+  background:rgba(23,26,33,.9);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:16px;
+  box-shadow:0 10px 30px rgba(0,0,0,.25);
+  margin-bottom:18px;
+}
+.controls{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+  gap:12px;
+  align-items:end;
+}
+.field label{ display:block; font-size:13px; color:var(--muted); margin-bottom:6px; }
+input,select{
+  width:100%;
+  padding:12px;
+  border-radius:12px;
+  border:1px solid var(--line);
+  background:#0d1017;
+  color:var(--text);
+  outline:none;
+  font-size:15px;
+}
+input:focus,select:focus{ border-color:var(--green); box-shadow:0 0 0 3px rgba(0,255,136,.12); }
+button{
+  padding:12px 14px;
+  border-radius:12px;
+  border:none;
+  cursor:pointer;
+  font-weight:bold;
+  background:var(--green);
+  color:#07120c;
+  transition:.15s ease;
+}
+button:hover{ transform:translateY(-1px); background:#20ffa0; }
+button.secondary{ background:#2a3140; color:var(--text); border:1px solid var(--line); }
+button.secondary:hover{ background:#343c4d; }
+.status{ margin-top:12px; font-size:13px; color:var(--muted); }
+.badge{ display:inline-block; padding:4px 8px; border-radius:8px; background:#252b38; color:var(--muted); font-size:12px; }
+.filters-panel{
+  display:none;
+  grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+  gap:12px;
+  align-items:end;
+  margin-top:12px;
+  padding-top:12px;
+  border-top:1px solid var(--line);
+}
+.filters-panel.open{ display:grid; }
+.table-wrap{
+  overflow:auto;
+  border-radius:18px;
+  border:1px solid var(--line);
+  box-shadow:0 10px 30px rgba(0,0,0,.25);
+  max-height:75vh;
+}
+table{ width:100%; border-collapse:separate; border-spacing:0; background:var(--card); min-width:950px; }
+th,td{ border-bottom:1px solid var(--line); padding:10px; text-align:center; }
+th{
+  position:sticky;
+  top:0;
+  z-index:50;
+  background:#0b111d;
+  color:#fff;
+  font-size:14px;
+  text-transform:uppercase;
+  letter-spacing:.4px;
+  box-shadow:0 2px 0 var(--line),0 8px 18px rgba(0,0,0,.35);
+}
+tr:hover td{ background:#1b202b; }
+.base-price{ color:var(--muted); }
+.final-usd,.price-ars{ color:var(--green); font-weight:bold; }
+.price-ars{ font-size:16px; }
+.green{ color:var(--green); font-weight:bold; }
+.yellow{ color:var(--yellow); font-weight:bold; }
+.red{ color:var(--red); font-weight:bold; }
+.color-pill{
+  display:inline-block;
+  min-width:110px;
+  padding:4px 10px;
+  border-radius:999px;
+  font-weight:bold;
+  text-align:center;
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow:inset 0 -8px 18px rgba(0,0,0,.15);
+  font-size:12px;
+}
+.color-dark{ background:#333; color:white; }
+.color-blue{ background:#0b5ca8; color:white; }
+.color-pink{ background:#ffc9c9; color:#d60000; }
+.color-white{ background:#f1f1f1; color:#111; }
+.color-silver{ background:#d8d8d8; color:#111; }
+.color-gold{ background:#d8b66b; color:#111; }
+.color-green-pill{ background:#9fc7a9; color:#102015; }
+.color-purple{ background:#b5a0e8; color:#160b33; }
+.color-red-pill{ background:#c62828; color:white; }
+.color-natural{ background:#c8c2b7; color:#111; }
+.color-titanium-blue{ background:#1f6171; color:white; }
+.color-titanium-black{ background:#333; color:white; }
+.color-titanium-white{ background:#e7e7e2; color:#111; }
+.color-default{ background:#444; color:white; }
+body.hide-base-usd .baseUsdCol{ display:none !important; }
+@media(max-width:700px){
+  .container{ padding:10px 8px; }
+  h2{ font-size:27px; }
+  .header{ align-items:flex-start; }
+  .controls{ grid-template-columns:1fr; gap:10px; }
+  input,select{ padding:10px 11px; font-size:14px; }
+  button{ width:100%; padding:10px 12px; }
+  .panel{ padding:13px; border-radius:16px; margin-bottom:14px; }
+  .table-wrap{ max-height:72vh; border-radius:12px; width:100%; }
+  table{ min-width:0; width:100%; table-layout:fixed; }
+  th,td{
+    padding:6px 3px;
+    font-size:10px;
+    line-height:1.1;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    vertical-align:middle;
+  }
+  th{ font-size:9px; letter-spacing:0; padding:7px 2px; }
+  th:nth-child(1),td:nth-child(1){ width:22%; text-align:left; padding-left:8px; }
+  th:nth-child(2),td:nth-child(2){ width:26%; }
+  th:nth-child(3),td:nth-child(3){ width:8%; }
+  th:nth-child(4),td:nth-child(4){ width:12%; }
+  th:nth-child(5),td:nth-child(5){ width:12%; }
+  th:nth-child(6),td:nth-child(6){ width:12%; text-align:right; padding-right:2px; }
+  th:nth-child(7),td:nth-child(7){ width:20%; text-align:right; padding-right:8px; }
+  body.hide-base-usd th:nth-child(1),body.hide-base-usd td:nth-child(1){ width:22%; }
+  body.hide-base-usd th:nth-child(2),body.hide-base-usd td:nth-child(2){ width:26%; }
+  body.hide-base-usd th:nth-child(3),body.hide-base-usd td:nth-child(3){ width:8%; }
+  body.hide-base-usd th:nth-child(4),body.hide-base-usd td:nth-child(4){ width:12%; }
+  body.hide-base-usd th:nth-child(6),body.hide-base-usd td:nth-child(6){ width:12%; }
+  body.hide-base-usd th:nth-child(7),body.hide-base-usd td:nth-child(7){ width:20%; }
+  td[data-label="MODELO"] strong{ display:block; font-size:10.5px; overflow:hidden; text-overflow:ellipsis; }
+  .color-pill{
+    min-width:0;
+    width:min(100%,96px);
+    max-width:96px;
+    padding:3px 4px;
+    margin:0 auto;
+    font-size:8px;
+    line-height:1.05;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .badge{ font-size:10px; padding:3px 5px; }
+  .base-price,.final-usd,.price-ars{ font-size:10.5px; font-weight:800; }
+  .price-ars{ font-size:11px; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div>
+      <h2>NicPhones Admin</h2>
+      <div class="subtitulo">Panel privado de precios y stock</div>
+    </div>
+    <span class="badge">Admin</span>
+  </div>
+
+  <div class="panel">
+    <div class="controls">
+      <button id="loginBtn">Cargar panel</button>
+      <button id="shareBtn" class="secondary">Compartir cliente</button>
+    </div>
+
+    <div class="controls" style="margin-top:12px;">
+      <div class="field">
+        <label>Dolar</label>
+        <input type="number" id="dolar" placeholder="Ej: 1250">
+      </div>
+      <div class="field">
+        <label>Ganancia (USD)</label>
+        <input type="number" id="ganancia" placeholder="Ej: 40">
+      </div>
+      <button id="guardarBtn">Guardar y recalcular</button>
+      <button id="toggleBaseBtn" class="secondary">Ocultar Base USD</button>
+    </div>
+
+    <div class="controls" style="margin-top:12px;">
+      <div class="field">
+        <label>Buscar equipo</label>
+        <input type="text" id="busqueda" placeholder="Ej: 17 pro max blue">
+      </div>
+      <button id="buscarBtn" class="secondary">Buscar</button>
+      <button id="toggleFiltrosBtn" class="secondary">Filtros</button>
+    </div>
+
+    <div class="filters-panel" id="filtrosPanel">
+      <div class="field">
+        <label>Color</label>
+        <select id="filtroColor"><option value="">Todos</option></select>
+      </div>
+      <div class="field">
+        <label>Bateria</label>
+        <select id="filtroBateria">
+          <option value="">Todas</option>
+          <option value="80">Mayor a 80</option>
+          <option value="90">Mayor a 90</option>
+          <option value="95">Mayor a 95</option>
+          <option value="100">Solo 100</option>
+        </select>
+      </div>
+      <button id="aplicarFiltrosBtn">Aplicar filtros</button>
+      <button id="limpiarFiltrosBtn" class="secondary">Limpiar</button>
+    </div>
+
+    <div class="status" id="status">Cargar panel para ver stock</div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>MODELO</th>
+          <th>COLOR</th>
+          <th>GB</th>
+          <th>BATERIA</th>
+          <th class="baseUsdCol">BASE USD</th>
+          <th>USD</th>
+          <th>PESOS</th>
+        </tr>
+      </thead>
+      <tbody id="tabla"></tbody>
     </table>
   </div>
 </div>
-<button id="backTopBtn" class="back-top secondary">Arriba</button>
 
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbygia2T_Hbh9H9AkCK_IEykgwSSxBoGysdj-y6BsDHaT2PKYu5iBRx14Ea1ign8MU23/exec";
+const CLIENT_URL = "https://alenicolau21-dotcom.github.io/calculnicphone/";
 
+const loginBtn = document.getElementById("loginBtn");
+const shareBtn = document.getElementById("shareBtn");
+const dolarInput = document.getElementById("dolar");
+const gananciaInput = document.getElementById("ganancia");
+const guardarBtn = document.getElementById("guardarBtn");
 const status = document.getElementById("status");
 const busquedaInput = document.getElementById("busqueda");
 const buscarBtn = document.getElementById("buscarBtn");
+const toggleBaseBtn = document.getElementById("toggleBaseBtn");
 const toggleFiltrosBtn = document.getElementById("toggleFiltrosBtn");
 const filtrosPanel = document.getElementById("filtrosPanel");
 const filtroColor = document.getElementById("filtroColor");
 const filtroBateria = document.getElementById("filtroBateria");
 const aplicarFiltrosBtn = document.getElementById("aplicarFiltrosBtn");
 const limpiarFiltrosBtn = document.getElementById("limpiarFiltrosBtn");
-const backTopBtn = document.getElementById("backTopBtn");
 
 let todosLosEquipos = [];
+let baseVisible = localStorage.getItem("adminBaseVisible");
+if(baseVisible === null) baseVisible = "true";
 
 function jsonp(params){
   return new Promise((resolve,reject) => {
-    const callback = "__nicphones_" + Date.now() + "_" + Math.random().toString(36).slice(2);
+    const callback = "__nicphonesAdmin_" + Date.now() + "_" + Math.random().toString(36).slice(2);
     const script = document.createElement("script");
     const query = new URLSearchParams({ ...params, callback, t:Date.now() });
     const timeout = setTimeout(() => {
@@ -53,11 +317,9 @@ function jsonp(params){
 function normalizarTexto(texto){
   return (texto || "").toString().trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
 }
-
 function modeloCorto(modelo){
   return (modelo || "").toString().replace(/^\s*iphone\s+/i,"").trim();
 }
-
 function claseColor(color){
   const c = normalizarTexto(color);
   if(c.includes("blue titanium")) return "color-titanium-blue";
@@ -76,10 +338,15 @@ function claseColor(color){
   return "color-default";
 }
 
+function actualizarBaseUSD(){
+  const ocultar = baseVisible !== "true";
+  document.body.classList.toggle("hide-base-usd",ocultar);
+  toggleBaseBtn.textContent = ocultar ? "Mostrar Base USD" : "Ocultar Base USD";
+}
+
 function renderTabla(equipos){
   const tbody = document.getElementById("tabla");
   tbody.innerHTML = "";
-
   equipos.forEach(eq => {
     tbody.innerHTML += `
       <tr data-search="${eq.search}">
@@ -87,17 +354,18 @@ function renderTabla(equipos){
         <td data-label="COLOR"><span class="color-pill ${claseColor(eq.color)}">${eq.color}</span></td>
         <td data-label="GB"><span class="badge">${eq.gb}</span></td>
         <td data-label="BATERIA" class="${eq.claseBateria}">${eq.bateria}%</td>
+        <td data-label="BASE USD" class="baseUsdCol base-price">$${eq.precioUSD}</td>
         <td data-label="USD" class="final-usd">$${eq.usdFinal}</td>
         <td data-label="PESOS" class="price-ars">$${Number(eq.pesos).toLocaleString()}</td>
       </tr>`;
   });
+  actualizarBaseUSD();
 }
 
 function poblarFiltroColor(equipos){
   const colorActual = filtroColor.value;
   const colores = [...new Set(equipos.map(eq => (eq.color || "").trim()).filter(Boolean))]
     .sort((a,b) => a.localeCompare(b));
-
   filtroColor.innerHTML = '<option value="">Todos</option>';
   colores.forEach(color => {
     const option = document.createElement("option");
@@ -111,7 +379,6 @@ function poblarFiltroColor(equipos){
 function aplicarFiltros(){
   const colorElegido = normalizarTexto(filtroColor.value);
   const bateriaElegida = filtroBateria.value;
-
   const filtrados = todosLosEquipos.filter(eq => {
     const coincideColor = !colorElegido || normalizarTexto(eq.color) === colorElegido;
     let coincideBateria = true;
@@ -119,7 +386,6 @@ function aplicarFiltros(){
     else if(bateriaElegida) coincideBateria = eq.bateria > parseInt(bateriaElegida);
     return coincideColor && coincideBateria;
   });
-
   renderTabla(filtrados);
   const hayFiltros = Boolean(colorElegido || bateriaElegida);
   status.textContent = hayFiltros
@@ -127,17 +393,49 @@ function aplicarFiltros(){
     : `Stock cargado: ${todosLosEquipos.length} equipos`;
 }
 
-async function cargar(){
+async function cargarAdmin(){
   try{
-    status.textContent = "Cargando stock...";
-    const data = await jsonp({ mode:"public" });
-    if(!data.ok) throw new Error(data.error || "No se pudo cargar stock");
+    status.textContent = "Cargando panel...";
+    const data = await jsonp({ mode:"admin" });
+    if(!data.ok) throw new Error(data.error || "No autorizado");
+    dolarInput.value = data.config.dolar || "";
+    gananciaInput.value = data.config.ganancia || "";
     todosLosEquipos = data.equipos || [];
     poblarFiltroColor(todosLosEquipos);
     aplicarFiltros();
   }catch(e){
     console.log(e);
-    status.textContent = "Error al cargar stock";
+    status.textContent = "Error: " + e.message;
+  }
+}
+
+async function guardarConfig(){
+  try{
+    status.textContent = "Guardando...";
+    const data = await jsonp({
+      mode:"save",
+      dolar:dolarInput.value,
+      ganancia:gananciaInput.value
+    });
+    if(!data.ok) throw new Error(data.error || "No se pudo guardar");
+    status.textContent = "Guardado correctamente";
+    await cargarAdmin();
+  }catch(e){
+    console.log(e);
+    status.textContent = "Error al guardar: " + e.message;
+  }
+}
+
+async function compartirCliente(){
+  if(navigator.share){
+    await navigator.share({
+      title:"NicPhones",
+      text:"Lista actualizada de equipos disponibles",
+      url:CLIENT_URL
+    });
+  }else{
+    await navigator.clipboard.writeText(CLIENT_URL);
+    status.textContent = "Link de cliente copiado";
   }
 }
 
@@ -146,7 +444,6 @@ function buscarFila(){
   if(!texto) return;
   const filas = document.querySelectorAll("[data-search]");
   filas.forEach(fila => fila.style.outline = "none");
-
   for(const fila of filas){
     if((fila.dataset.search || "").includes(texto)){
       fila.scrollIntoView({ behavior:"smooth", block:"center" });
@@ -157,6 +454,9 @@ function buscarFila(){
   status.textContent = "No se encontro ningun resultado";
 }
 
+loginBtn.addEventListener("click",cargarAdmin);
+guardarBtn.addEventListener("click",guardarConfig);
+shareBtn.addEventListener("click",compartirCliente);
 buscarBtn.addEventListener("click",buscarFila);
 toggleFiltrosBtn.addEventListener("click",() => filtrosPanel.classList.toggle("open"));
 aplicarFiltrosBtn.addEventListener("click",aplicarFiltros);
@@ -165,9 +465,13 @@ limpiarFiltrosBtn.addEventListener("click",() => {
   filtroBateria.value = "";
   aplicarFiltros();
 });
+toggleBaseBtn.addEventListener("click",() => {
+  baseVisible = baseVisible === "true" ? "false" : "true";
+  localStorage.setItem("adminBaseVisible",baseVisible);
+  actualizarBaseUSD();
+});
 busquedaInput.addEventListener("keydown",e => { if(e.key === "Enter") buscarFila(); });
-backTopBtn.addEventListener("click",() => window.scrollTo({ top:0, behavior:"smooth" }));
-cargar();
+actualizarBaseUSD();
 </script>
 </body>
 </html>
