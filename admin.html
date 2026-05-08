@@ -470,15 +470,50 @@ async function guardarSinMensaje(){
 }
 
 async function compartirCliente(){
-  try{
-    status.textContent = "Cargando ultimas modificaciones antes de compartir";
-    await guardarSinMensaje();
+  const textoOriginal = shareBtn.textContent;
+  shareBtn.textContent = "Guardando datos antes de compartir";
+  shareBtn.disabled = true;
+  status.textContent = "Cargando ultimas modificaciones antes de compartir";
 
-    await copiarLinkCliente();
-    status.textContent = "Link copiado con precios actualizados";
+  const guardarPromesa = guardarSinMensaje();
+  let compartirPromesa;
+
+  try{
+    if(navigator.share){
+      compartirPromesa = navigator.share({
+        title:"NicPhones",
+        text:"Lista actualizada de equipos disponibles",
+        url:CLIENT_URL
+      });
+    }else{
+      compartirPromesa = copiarLinkCliente();
+    }
+
+    await guardarPromesa;
+    await compartirPromesa;
+    status.textContent = navigator.share
+      ? "Datos guardados y link compartido"
+      : "Datos guardados y link copiado";
   }catch(e){
     console.log(e);
-    status.textContent = "Error al compartir: " + e.message;
+
+    try{
+      await guardarPromesa;
+    }catch(saveError){
+      status.textContent = "Error al guardar antes de compartir: " + saveError.message;
+      shareBtn.textContent = textoOriginal;
+      shareBtn.disabled = false;
+      return;
+    }
+
+    if(e && e.name === "AbortError"){
+      status.textContent = "Datos guardados. Compartir cancelado";
+    }else{
+      status.textContent = "Datos guardados. Link cliente: " + CLIENT_URL;
+    }
+  }finally{
+    shareBtn.textContent = textoOriginal;
+    shareBtn.disabled = false;
   }
 }
 
