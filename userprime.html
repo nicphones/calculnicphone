@@ -232,8 +232,8 @@ body.hide-base-usd .baseUsdCol{ display:none !important; }
 <div class="loading-overlay" id="loadingOverlay">
   <div class="loading-box">
     <div class="loader"></div>
-    <h3 class="loading-title">Cargando</h3>
-    <p class="loading-text">obteniendo stock proveedor.</p>
+    <h3 class="loading-title">Cargando panel</h3>
+    <p class="loading-text">Estamos actualizando stock y precios.</p>
   </div>
 </div>
 <div class="container">
@@ -288,6 +288,21 @@ body.hide-base-usd .baseUsdCol{ display:none !important; }
           <option value="100">Solo 100</option>
         </select>
       </div>
+      <div class="field">
+        <label>Precio en</label>
+        <select id="filtroPrecioTipo">
+          <option value="usd">USD</option>
+          <option value="pesos">Pesos</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Precio minimo</label>
+        <input type="number" id="filtroPrecioMin" placeholder="Min">
+      </div>
+      <div class="field">
+        <label>Precio maximo</label>
+        <input type="number" id="filtroPrecioMax" placeholder="Max">
+      </div>
       <button id="aplicarFiltrosBtn">Aplicar filtros</button>
       <button id="limpiarFiltrosBtn" class="secondary">Limpiar</button>
     </div>
@@ -315,7 +330,7 @@ body.hide-base-usd .baseUsdCol{ display:none !important; }
 
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbyyg8E-9icCd3YQH7Rgrxk1q2lxXPPmvtRuFCFoz7qYhRRKhIr52bLni3J3OPtj8k1yUw/exec";
-const CLIENT_URL = "https://nicphones.github.io/calculnicphone/";
+const CLIENT_URL = "https://alenicolau21-dotcom.github.io/calculnicphone/";
 
 const shareBtn = document.getElementById("shareBtn");
 const dolarInput = document.getElementById("dolar");
@@ -330,6 +345,9 @@ const toggleFiltrosBtn = document.getElementById("toggleFiltrosBtn");
 const filtrosPanel = document.getElementById("filtrosPanel");
 const filtroColor = document.getElementById("filtroColor");
 const filtroBateria = document.getElementById("filtroBateria");
+const filtroPrecioTipo = document.getElementById("filtroPrecioTipo");
+const filtroPrecioMin = document.getElementById("filtroPrecioMin");
+const filtroPrecioMax = document.getElementById("filtroPrecioMax");
 const aplicarFiltrosBtn = document.getElementById("aplicarFiltrosBtn");
 const limpiarFiltrosBtn = document.getElementById("limpiarFiltrosBtn");
 const loadingOverlay = document.getElementById("loadingOverlay");
@@ -434,15 +452,26 @@ function poblarFiltroColor(equipos){
 function aplicarFiltros(){
   const colorElegido = normalizarTexto(filtroColor.value);
   const bateriaElegida = filtroBateria.value;
+  const precioTipo = filtroPrecioTipo.value;
+  const precioMin = parseFloat(filtroPrecioMin.value);
+  const precioMax = parseFloat(filtroPrecioMax.value);
+  const tienePrecioMin = Number.isFinite(precioMin);
+  const tienePrecioMax = Number.isFinite(precioMax);
+
   const filtrados = todosLosEquipos.filter(eq => {
     const coincideColor = !colorElegido || normalizarTexto(eq.color) === colorElegido;
     let coincideBateria = true;
     if(bateriaElegida === "100") coincideBateria = eq.bateria === 100;
     else if(bateriaElegida) coincideBateria = eq.bateria > parseInt(bateriaElegida);
-    return coincideColor && coincideBateria;
+
+    const precio = precioTipo === "pesos" ? Number(eq.pesos) : Number(eq.usdFinal);
+    const coincidePrecioMin = !tienePrecioMin || precio >= precioMin;
+    const coincidePrecioMax = !tienePrecioMax || precio <= precioMax;
+
+    return coincideColor && coincideBateria && coincidePrecioMin && coincidePrecioMax;
   });
   renderTabla(filtrados);
-  const hayFiltros = Boolean(colorElegido || bateriaElegida);
+  const hayFiltros = Boolean(colorElegido || bateriaElegida || tienePrecioMin || tienePrecioMax);
   status.textContent = hayFiltros
     ? `Filtrado: ${filtrados.length} de ${todosLosEquipos.length} equipos`
     : `Stock cargado: ${todosLosEquipos.length} equipos`;
@@ -632,6 +661,9 @@ aplicarFiltrosBtn.addEventListener("click",aplicarFiltros);
 limpiarFiltrosBtn.addEventListener("click",() => {
   filtroColor.value = "";
   filtroBateria.value = "";
+  filtroPrecioTipo.value = "usd";
+  filtroPrecioMin.value = "";
+  filtroPrecioMax.value = "";
   aplicarFiltros();
 });
 toggleBaseBtn.addEventListener("click",() => {
