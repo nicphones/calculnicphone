@@ -96,6 +96,37 @@ th{
   letter-spacing:.4px;
   box-shadow:0 2px 0 var(--line),0 8px 18px rgba(0,0,0,.35);
 }
+th[data-col]{
+  cursor:pointer;
+  user-select:none;
+}
+th[data-col]:hover{
+  color:var(--green);
+}
+[data-col].col-hidden{
+  display:none !important;
+}
+.hidden-columns{
+  display:none;
+  flex-wrap:wrap;
+  gap:8px;
+  align-items:center;
+  margin-top:12px;
+  color:var(--muted);
+  font-size:13px;
+}
+.hidden-columns.open{
+  display:flex;
+}
+.hidden-columns button{
+  width:auto;
+  padding:7px 10px;
+  border-radius:999px;
+  background:#2a3140;
+  color:var(--text);
+  border:1px solid var(--line);
+  font-size:12px;
+}
 tr:hover td{ background:#1b202b; }
 .base-price{ color:var(--muted); }
 .final-usd,.price-ars{ color:var(--green); font-weight:bold; }
@@ -183,9 +214,13 @@ body.hide-base-usd .baseUsdCol{ display:none !important; }
   .controls{ grid-template-columns:1fr; gap:10px; }
   input,select{ padding:10px 11px; font-size:14px; }
   button{ width:100%; padding:10px 12px; }
+  .hidden-columns button{ width:auto; }
   .panel{ padding:13px; border-radius:16px; margin-bottom:14px; }
   .table-wrap{ max-height:72vh; border-radius:12px; width:100%; }
   table{ min-width:0; width:100%; table-layout:fixed; }
+  body.has-hidden-columns table{ table-layout:auto; }
+  body.has-hidden-columns th,
+  body.has-hidden-columns td{ width:auto !important; }
   th,td{
     padding:6px 3px;
     font-size:10px;
@@ -308,19 +343,20 @@ body.hide-base-usd .baseUsdCol{ display:none !important; }
     </div>
 
     <div class="status" id="status">Cargando panel...</div>
+    <div class="hidden-columns" id="hiddenColumns"></div>
   </div>
 
   <div class="table-wrap">
     <table>
       <thead>
         <tr>
-          <th>MODELO</th>
-          <th>COLOR</th>
-          <th>GB</th>
-          <th>BATERIA</th>
+          <th data-col="modelo">MODELO</th>
+          <th data-col="color">COLOR</th>
+          <th data-col="gb">GB</th>
+          <th data-col="bateria">BATERIA</th>
           <th class="baseUsdCol">BASE USD</th>
-          <th>USD</th>
-          <th>PESOS</th>
+          <th data-col="usd">USD</th>
+          <th data-col="pesos">PESOS</th>
         </tr>
       </thead>
       <tbody id="tabla"></tbody>
@@ -330,7 +366,7 @@ body.hide-base-usd .baseUsdCol{ display:none !important; }
 
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbyyg8E-9icCd3YQH7Rgrxk1q2lxXPPmvtRuFCFoz7qYhRRKhIr52bLni3J3OPtj8k1yUw/exec";
-const CLIENT_URL = "https://alenicolau21-dotcom.github.io/calculnicphone/";
+const CLIENT_URL = new URL("./",window.location.href).href;
 
 const shareBtn = document.getElementById("shareBtn");
 const dolarInput = document.getElementById("dolar");
@@ -351,10 +387,20 @@ const filtroPrecioMax = document.getElementById("filtroPrecioMax");
 const aplicarFiltrosBtn = document.getElementById("aplicarFiltrosBtn");
 const limpiarFiltrosBtn = document.getElementById("limpiarFiltrosBtn");
 const loadingOverlay = document.getElementById("loadingOverlay");
+const hiddenColumns = document.getElementById("hiddenColumns");
 
 let todosLosEquipos = [];
 let baseVisible = localStorage.getItem("adminBaseVisible");
 if(baseVisible === null) baseVisible = "true";
+let columnasOcultas = JSON.parse(localStorage.getItem("adminColumnasOcultas") || "[]");
+const nombresColumnas = {
+  modelo:"MODELO",
+  color:"COLOR",
+  gb:"GB",
+  bateria:"BATERIA",
+  usd:"USD",
+  pesos:"PESOS"
+};
 
 function jsonp(params){
   return new Promise((resolve,reject) => {
@@ -423,16 +469,17 @@ function renderTabla(equipos){
   equipos.forEach(eq => {
     tbody.innerHTML += `
       <tr data-search="${eq.search}">
-        <td data-label="MODELO"><strong>${modeloCorto(eq.modelo)}</strong></td>
-        <td data-label="COLOR"><span class="color-pill ${claseColor(eq.color)}">${eq.color}</span></td>
-        <td data-label="GB"><span class="badge">${eq.gb}</span></td>
-        <td data-label="BATERIA" class="${eq.claseBateria}">${eq.bateria}%</td>
+        <td data-col="modelo" data-label="MODELO"><strong>${modeloCorto(eq.modelo)}</strong></td>
+        <td data-col="color" data-label="COLOR"><span class="color-pill ${claseColor(eq.color)}">${eq.color}</span></td>
+        <td data-col="gb" data-label="GB"><span class="badge">${eq.gb}</span></td>
+        <td data-col="bateria" data-label="BATERIA" class="${eq.claseBateria}">${eq.bateria}%</td>
         <td data-label="BASE USD" class="baseUsdCol base-price">$${eq.precioUSD}</td>
-        <td data-label="USD" class="final-usd">$${eq.usdFinal}</td>
-        <td data-label="PESOS" class="price-ars">$${Number(eq.pesos).toLocaleString()}</td>
+        <td data-col="usd" data-label="USD" class="final-usd">$${eq.usdFinal}</td>
+        <td data-col="pesos" data-label="PESOS" class="price-ars">$${Number(eq.pesos).toLocaleString()}</td>
       </tr>`;
   });
   actualizarBaseUSD();
+  aplicarColumnasOcultas();
 }
 
 function poblarFiltroColor(equipos){
@@ -521,6 +568,49 @@ function mostrarErrorCarga(){
   if(loader) loader.style.display = "none";
   if(title) title.textContent = "No se pudo cargar";
   if(text) text.textContent = "Recarga la pagina o intenta nuevamente en unos segundos.";
+}
+
+function guardarColumnasOcultas(){
+  localStorage.setItem("adminColumnasOcultas",JSON.stringify(columnasOcultas));
+}
+
+function aplicarColumnasOcultas(){
+  document.body.classList.toggle("has-hidden-columns",columnasOcultas.length > 0);
+  document.querySelectorAll("[data-col]").forEach(el => {
+    el.classList.toggle("col-hidden",columnasOcultas.includes(el.dataset.col));
+  });
+  renderColumnasOcultas();
+}
+
+function renderColumnasOcultas(){
+  if(!columnasOcultas.length){
+    hiddenColumns.classList.remove("open");
+    hiddenColumns.innerHTML = "";
+    return;
+  }
+
+  hiddenColumns.classList.add("open");
+  hiddenColumns.innerHTML = "<span>Columnas ocultas:</span>";
+  columnasOcultas.forEach(col => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = nombresColumnas[col] || col;
+    btn.addEventListener("click",() => mostrarColumna(col));
+    hiddenColumns.appendChild(btn);
+  });
+}
+
+function ocultarColumna(col){
+  if(columnasOcultas.includes(col)) return;
+  columnasOcultas.push(col);
+  guardarColumnasOcultas();
+  aplicarColumnasOcultas();
+}
+
+function mostrarColumna(col){
+  columnasOcultas = columnasOcultas.filter(item => item !== col);
+  guardarColumnasOcultas();
+  aplicarColumnasOcultas();
 }
 
 async function cargarAdmin(){
@@ -672,7 +762,11 @@ toggleBaseBtn.addEventListener("click",() => {
   actualizarBaseUSD();
 });
 busquedaInput.addEventListener("keydown",e => { if(e.key === "Enter") buscarFila(); });
+document.querySelectorAll("th[data-col]").forEach(th => {
+  th.addEventListener("click",() => ocultarColumna(th.dataset.col));
+});
 actualizarBaseUSD();
+aplicarColumnasOcultas();
 cargarAdmin();
 </script>
 </body>
