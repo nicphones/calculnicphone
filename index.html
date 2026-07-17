@@ -227,9 +227,9 @@ tr:hover td{ background:#1b202b; }
   .panel{ padding:13px; border-radius:16px; margin-bottom:14px; }
   .table-wrap{ max-height:72vh; border-radius:12px; width:100%; }
   table{ min-width:0; width:100%; table-layout:fixed; }
-  body.has-hidden-columns table{ table-layout:auto; }
+  body.has-hidden-columns table{ table-layout:fixed; }
   body.has-hidden-columns th,
-  body.has-hidden-columns td{ width:auto !important; }
+  body.has-hidden-columns td{ width:calc(100% / var(--visible-cols, 6)) !important; }
   th,td{
     padding:6px 3px;
     font-size:10px;
@@ -529,7 +529,14 @@ function aplicarColumnasOcultas(){
   document.querySelectorAll("[data-col]").forEach(el => {
     el.classList.toggle("col-hidden",columnasOcultas.includes(el.dataset.col));
   });
+  actualizarCantidadColumnasVisibles();
   renderColumnasOcultas();
+}
+
+function actualizarCantidadColumnasVisibles(){
+  const visibles = [...document.querySelectorAll("thead th[data-col]")]
+    .filter(th => !columnasOcultas.includes(th.dataset.col));
+  document.body.style.setProperty("--visible-cols",Math.max(visibles.length,1));
 }
 
 function renderColumnasOcultas(){
